@@ -99,27 +99,31 @@ A task is done only when its own acceptance checks **and** these pass.
 
 ## D. Phase 1: Database and helpers
 
-- [ ] **T-010 (P1) Prisma schema**
+- [x] **T-010 (P1) Prisma schema**
   - Depends on: T-002
   - Do: model every table in `PRD.md` section 10 with the exact enums, unique keys, and relations. Money columns are `Int`. Quantity columns are `Decimal`. Add indexes on `orders.createdAt`, `orders.customerId`, `orders.status`, `payments.orderId`, `journal_lines.accountId`, `journal_entries.entryDate`, `journal_entries(refType, refId)`.
   - Accept: `prisma migrate dev` creates a clean migration. The schema has no delete cascades on financial tables.
+  - Note: migration `20261023160000_init` is applied to `laundrysia` and `laundrysia_test`. The app user cannot create a shadow database, so `npm run db:migrate` uses `migrate deploy`; the README documents how to generate the next migration.
 
-- [ ] **T-011 (P1) Money, dates, and invoice helpers** (with tests)
+- [x] **T-011 (P1) Money, dates, and invoice helpers** (with tests)
   - Depends on: T-003
   - Do: `src/lib/money.ts`: `lineTotal(unitPrice, quantity)` using integer math on hundredths with explicit rounding, `formatRupiah(n)` giving `Rp 40.000`, `parseRupiah(text)`, `sum(numbers)`.
   - Do: `src/lib/dates.ts`: `businessDate(date)` in Asia/Jakarta, `startOfDayWIB`, `endOfDayWIB`, `formatDate(date, locale)`.
   - Do: `src/lib/phone.ts`: `normalizePhone(text)` per `PRD.md` section 7.
   - Accept: unit tests cover rounding (for example 3,33 kg at 7.000), thousands formatting, midnight edge cases (23:30 WIB is the same business day while UTC is the previous day), and phone normalization (`+62 812-3456` becomes `0812...`).
+  - Note: money math is integer hundredths; `invoice.ts` formats `INV-YYYYMMDD-NNN`. Tests cover WIB day boundaries, rounding, quantity parsing, and phone prefixes.
 
-- [ ] **T-012 (P1) Seed script**
+- [x] **T-012 (P1) Seed script**
   - Depends on: T-010
   - Do: `prisma/seed.ts` creates the 12 accounts from `PRD.md` section 8.1, two users (a manager and a cashier with documented demo passwords, hashed), the three demo services (Wash + iron 8.000/kg, Express 12.000/kg, Kiloan kos 7.000/kg), and no orders.
   - Accept: `npm run db:seed` can run twice without duplicating rows. README lists the demo logins and says to change them.
+  - Note: runs twice without duplicates. Re-runs keep manager edits to services and settings; passwords are only written on first creation.
 
-- [ ] **T-013 (P1) Zod schemas**
+- [x] **T-013 (P1) Zod schemas**
   - Depends on: T-011
   - Do: `src/lib/schemas/` with one file per form: customer, order, payment, expense, supply purchase, supply usage, service, user, void. Rules exactly as in `PRD.md` section 7. Error messages come from the dictionary.
   - Accept: tests cover at least one valid and one invalid case per schema, including overpayment limits and phone validation.
+  - Note: messages live in `src/lib/i18n.ts` with Indonesian and English catalogs. Schemas cover all listed forms plus shop profile and opening balance; 40 schema tests cover the rules.
 
 ---
 

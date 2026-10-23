@@ -152,6 +152,18 @@ npm run db:seed       # accounts, demo users, services (safe to run twice)
 
 Prisma 7 reads `DATABASE_URL` from `prisma.config.ts`, not from `schema.prisma`. The CLI does not load `.env` on its own, so the config file loads it with `dotenv`.
 
+### Changing the schema
+
+The app's MySQL user owns the app databases but cannot create the temporary shadow database that `prisma migrate dev` needs. `npm run db:migrate` therefore runs `prisma migrate deploy`. To add a migration, generate the SQL from the live database, review it, then apply it:
+
+```powershell
+New-Item -ItemType Directory prisma/migrations/20261024120000_add_something
+npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script --output prisma/migrations/20261024120000_add_something/migration.sql
+npm run db:migrate
+```
+
+The timestamp prefix must be unique and sort after the previous migration. If you prefer the standard `migrate dev` flow, create a separate shadow database, grant this user access to it, and set `shadowDatabaseUrl` in `prisma.config.ts`.
+
 ### 5. Start the app
 
 ```bash
@@ -238,7 +250,7 @@ laundrysia/
       dates.ts             WIB business dates
       phone.ts             phone normalization
       schemas/             Zod schemas, one per form
-      i18n/                Indonesian and English dictionaries
+      i18n.ts              Indonesian and English dictionaries
 ```
 
 Rule of thumb: reads in Server Components, writes in Server Actions, money math only in `lib/money.ts`, accounting only in `server/accounting/`.

@@ -1,6 +1,6 @@
 // LaundrySIA database schema.
-// The full model set is added in task T-010. This file starts with the
-// datasource and client generator so the connection can be verified first.
+// Money is stored as integer rupiah. Quantities are Decimal(8,2) or Decimal(10,2).
+// Financial tables never cascade-delete: history is kept and corrections use reversals.
 
 datasource db {
   provider = "mysql"
@@ -9,4 +9,330 @@ datasource db {
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+}
+
+enum UserRole {
+  CASHIER
+  MANAGER
+}
+
+enum ServiceUnit {
+  KG
+  PIECE
+}
+
+enum OrderStatus {
+  RECEIVED
+  WASHING
+  DRYING_IRONING
+  READY
+  COMPLETED
+}
+
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  EWALLET
+}
+
+enum PaymentSource {
+  CASH
+  BANK
+}
+
+enum ExpenseCategory {
+  ELECTRICITY_WATER
+  WAGES
+  RENT
+  OTHER
+}
+
+enum SupplyMovementType {
+  IN
+  OUT
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  EXPENSE
+}
+
+enum JournalRefType {
+  ORDER
+  PAYMENT
+  EXPENSE
+  PURCHASE
+  USAGE
+  OPENING
+  VOID
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(80)
+  username     String   @unique @db.VarChar(50)
+  passwordHash String   @db.VarChar(100)
+  role         UserRole
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  ordersCreated         Order[]          @relation("OrderCreatedBy")
+  ordersVoided          Order[]          @relation("OrderVoidedBy")
+  paymentsReceived      Payment[]        @relation("PaymentReceivedBy")
+  expensesCreated       Expense[]        @relation("ExpenseCreatedBy")
+  expensesReversed      Expense[]        @relation("ExpenseReversedBy")
+  movementsCreated      SupplyMovement[] @relation("SupplyMovementCreatedBy")
+  journalEntriesCreated JournalEntry[]   @relation("JournalEntryCreatedBy")
+  auditLogs             AuditLog[]
+  idempotencyKeys       IdempotencyKey[]
+  settingsUpdated       Setting[]        @relation("SettingUpdatedBy")
+
+  @@map("users")
+}
+
+model Customer {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(80)
+  phone     String   @unique @db.VarChar(20)
+  address   String?  @db.VarChar(200)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+
+  @@map("customers")
+}
+
+model Service {
+  id             Int         @id @default(autoincrement())
+  name           String      @unique @db.VarChar(80)
+  unit           ServiceUnit
+  price          Int
+  turnaroundDays Int         @default(1)
+  isActive       Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  items OrderItem[]
+
+  @@map("services")
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  invoiceNo   String      @unique @db.VarChar(24)
+  customerId  Int
+  status      OrderStatus @default(RECEIVED)
+  subtotal    Int
+  discount    Int         @default(0)
+  total       Int
+  note        String?     @db.VarChar(200)
+  pickupDate  DateTime    @db.Date
+  createdById Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  voidedAt    DateTime?
+  voidReason  String?     @db.VarChar(200)
+  voidedById  Int?
+
+  customer  Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  createdBy User        @relation("OrderCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  voidedBy  User?       @relation("OrderVoidedBy", fields: [voidedById], references: [id], onDelete: Restrict)
+  items     OrderItem[]
+  payments  Payment[]
+
+  @@index([createdAt])
+  @@index([customerId])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id          Int         @id @default(autoincrement())
+  orderId     Int
+  serviceId   Int
+  serviceName String      @db.VarChar(80)
+  unit        ServiceUnit
+  unitPrice   Int
+  quantity    Decimal     @db.Decimal(8, 2)
+  lineTotal   Int
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([serviceId])
+  @@map("order_items")
+}
+
+model Payment {
+  id           Int           @id @default(autoincrement())
+  orderId      Int
+  amount       Int
+  method       PaymentMethod
+  paidAt       DateTime      @default(now())
+  receivedById Int
+
+  order      Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  receivedBy User  @relation("PaymentReceivedBy", fields: [receivedById], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([paidAt])
+  @@map("payments")
+}
+
+model InvoiceCounter {
+  date DateTime @id @db.Date
+  last Int      @default(0)
+
+  @@map("invoice_counters")
+}
+
+model Supply {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(80)
+  unit        String   @db.VarChar(20)
+  stockQty    Decimal  @default(0) @db.Decimal(10, 2)
+  minQty      Decimal  @default(0) @db.Decimal(10, 2)
+  avgUnitCost Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  movements SupplyMovement[]
+
+  @@map("supplies")
+}
+
+model SupplyMovement {
+  id          Int                @id @default(autoincrement())
+  supplyId    Int
+  type        SupplyMovementType
+  quantity    Decimal            @db.Decimal(10, 2)
+  totalCost   Int
+  date        DateTime           @db.Date
+  note        String?            @db.VarChar(200)
+  createdById Int
+  createdAt   DateTime           @default(now())
+
+  supply    Supply @relation(fields: [supplyId], references: [id], onDelete: Restrict)
+  createdBy User   @relation("SupplyMovementCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([supplyId])
+  @@index([date])
+  @@map("supply_movements")
+}
+
+model Expense {
+  id            Int             @id @default(autoincrement())
+  category      ExpenseCategory
+  amount        Int
+  paidFrom      PaymentSource
+  date          DateTime        @db.Date
+  note          String?         @db.VarChar(200)
+  createdById   Int
+  createdAt     DateTime        @default(now())
+  reversedAt    DateTime?
+  reversedById  Int?
+  reverseReason String?         @db.VarChar(200)
+
+  createdBy  User  @relation("ExpenseCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  reversedBy User? @relation("ExpenseReversedBy", fields: [reversedById], references: [id], onDelete: Restrict)
+
+  @@index([date])
+  @@map("expenses")
+}
+
+model Account {
+  id       Int         @id @default(autoincrement())
+  code     String      @unique @db.VarChar(10)
+  name     String      @db.VarChar(80)
+  type     AccountType
+  isActive Boolean     @default(true)
+
+  lines JournalLine[]
+
+  @@map("accounts")
+}
+
+model JournalEntry {
+  id              Int            @id @default(autoincrement())
+  entryDate       DateTime       @db.Date
+  description     String         @db.VarChar(200)
+  refType         JournalRefType
+  refId           Int?
+  reversesEntryId Int?           @unique
+  createdById     Int
+  createdAt       DateTime       @default(now())
+
+  createdBy       User          @relation("JournalEntryCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  reversesEntry   JournalEntry? @relation("EntryReversal", fields: [reversesEntryId], references: [id], onDelete: Restrict)
+  reversedByEntry JournalEntry? @relation("EntryReversal")
+  lines           JournalLine[]
+
+  @@index([entryDate])
+  @@index([refType, refId])
+  @@map("journal_entries")
+}
+
+model JournalLine {
+  id        Int @id @default(autoincrement())
+  entryId   Int
+  accountId Int
+  debit     Int @default(0)
+  credit    Int @default(0)
+
+  entry   JournalEntry @relation(fields: [entryId], references: [id], onDelete: Restrict)
+  account Account      @relation(fields: [accountId], references: [id], onDelete: Restrict)
+
+  @@index([entryId])
+  @@index([accountId])
+  @@map("journal_lines")
+}
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int?
+  action     String   @db.VarChar(50)
+  entityType String   @db.VarChar(50)
+  entityId   Int?
+  detail     Json?
+  createdAt  DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([createdAt])
+  @@index([userId])
+  @@index([action])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
+
+model IdempotencyKey {
+  key        String   @id @db.VarChar(128)
+  action     String   @db.VarChar(50)
+  userId     Int
+  resultType String?  @db.VarChar(50)
+  resultId   Int?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([createdAt])
+  @@map("idempotency_keys")
+}
+
+model Setting {
+  key         String   @id @db.VarChar(64)
+  value       String   @db.Text
+  updatedAt   DateTime @updatedAt
+  updatedById Int?
+
+  updatedBy User? @relation("SettingUpdatedBy", fields: [updatedById], references: [id], onDelete: Restrict)
+
+  @@map("settings")
 }
