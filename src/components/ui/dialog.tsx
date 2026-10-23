@@ -8,11 +8,12 @@ export type DialogProps = {
   open: boolean;
   onClose: () => void;
   title: string;
+  closeLabel: string;
   children: ReactNode;
   footer?: ReactNode;
 };
 
-export function Dialog({ open, onClose, title, children, footer }: DialogProps) {
+export function Dialog({ open, onClose, title, closeLabel, children, footer }: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
 
@@ -52,7 +53,7 @@ export function Dialog({ open, onClose, title, children, footer }: DialogProps) 
         <h2 id={titleId} className={styles.title}>
           {title}
         </h2>
-        <button type="button" className={styles.close} onClick={onClose} aria-label="Tutup dialog">
+        <button type="button" className={styles.close} onClick={onClose} aria-label={closeLabel}>
           <X aria-hidden="true" size={20} />
         </button>
       </div>

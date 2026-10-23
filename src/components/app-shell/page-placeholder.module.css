@@ -1,0 +1,31 @@
+.placeholder {
+  max-width: 560px;
+  margin: var(--s-8) auto;
+  padding: var(--s-8);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  text-align: center;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--s-12);
+  height: var(--s-12);
+  color: var(--text-muted);
+  background: var(--cream-soft);
+  border-radius: var(--r-pill);
+}
+
+.placeholder h2 {
+  margin-top: var(--s-4);
+}
+
+.placeholder p {
+  margin-top: var(--s-2);
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 20px;
+}

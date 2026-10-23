@@ -285,12 +285,21 @@ What is covered:
 - Business date handling around midnight in WIB
 - Phone normalization
 - Zod schemas: valid and invalid input
+- Login: wrong password, inactive account, role allow/deny, and a real-database login that sets the session cookie
+- Audit helper: rows commit with their transaction and roll back when it fails
 - Journal core: unbalanced entries rejected, reversals net to zero
 - Posting rules for every event
 - Permissions: cashier cannot use manager actions
 - The full scenario from `PRD.md` section 13, with every expected number and the six invariants
 
-Use a separate database for tests (for example `laundrysia_test`) and point to it with `DATABASE_URL` in a `.env.test` file, so tests never touch your real data.
+Use a separate database for tests (for example `laundrysia_test`) and point to it with `DATABASE_URL` in a `.env.test` file, so tests never touch your real data. The login and audit integration tests open that database, so create it and apply the same migrations before running `npm run test`:
+
+```powershell
+$env:DOTENV_CONFIG_PATH = ".env.test"
+npm run db:migrate
+```
+
+Remove the environment variable (or open a new terminal) before running migrations against the development database.
 
 ---
 

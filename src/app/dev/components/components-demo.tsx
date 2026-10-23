@@ -171,6 +171,7 @@ function DemoContent() {
           open={dialogOpen}
           onClose={() => setDialogOpen(false)}
           title="Batalkan pesanan?"
+          closeLabel="Tutup dialog"
           footer={
             <>
               <Button variant="secondary" onClick={() => setDialogOpen(false)}>

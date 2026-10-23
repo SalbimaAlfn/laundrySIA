@@ -41,8 +41,62 @@ export type ValidationMessages = {
   openingAmount: string;
 };
 
+export type AuthMessages = {
+  title: string;
+  lead: string;
+  username: string;
+  password: string;
+  submit: string;
+  showPassword: string;
+  hidePassword: string;
+  invalidCredentials: string;
+  inactiveAccount: string;
+  sessionEnded: string;
+  loggedOut: string;
+  managerOnly: string;
+  unavailable: string;
+};
+
+export type NavMessages = {
+  primary: string;
+  menu: string;
+  dashboard: string;
+  counter: string;
+  newOrder: string;
+  orders: string;
+  customers: string;
+  receivables: string;
+  expenses: string;
+  stock: string;
+  reports: string;
+  settings: string;
+  audit: string;
+  more: string;
+  searchLabel: string;
+  searchPlaceholder: string;
+  search: string;
+};
+
+export type CommonMessages = {
+  appName: string;
+  skipToContent: string;
+  logOut: string;
+  closeDialog: string;
+  comingSoon: string;
+  comingSoonBody: string;
+};
+
+export type RoleMessages = {
+  CASHIER: string;
+  MANAGER: string;
+};
+
 export type Dictionary = {
   validation: ValidationMessages;
+  auth: AuthMessages;
+  nav: NavMessages;
+  common: CommonMessages;
+  roles: RoleMessages;
 };
 
 const id: Dictionary = {
@@ -82,6 +136,52 @@ const id: Dictionary = {
     totalCost: "Total biaya harus lebih dari 0.",
     openingAmount: "Isi minimal satu saldo awal lebih dari 0.",
   },
+  auth: {
+    title: "Masuk",
+    lead: "Masuk untuk mulai mencatat pesanan dan pembayaran.",
+    username: "Username",
+    password: "Kata sandi",
+    submit: "Masuk",
+    showPassword: "Tampilkan kata sandi",
+    hidePassword: "Sembunyikan kata sandi",
+    invalidCredentials: "Username atau kata sandi tidak cocok.",
+    inactiveAccount: "Akun ini dinonaktifkan. Hubungi manajer.",
+    sessionEnded: "Sesi berakhir karena akun Anda dinonaktifkan.",
+    loggedOut: "Anda sudah keluar.",
+    managerOnly: "Hanya manajer yang dapat membuka halaman itu.",
+    unavailable: "Tidak dapat masuk sekarang. Coba lagi sebentar lagi.",
+  },
+  nav: {
+    primary: "Navigasi utama",
+    menu: "Menu",
+    dashboard: "Dashboard",
+    counter: "Counter",
+    newOrder: "Pesanan baru",
+    orders: "Pesanan",
+    customers: "Pelanggan",
+    receivables: "Piutang",
+    expenses: "Pengeluaran",
+    stock: "Stok",
+    reports: "Laporan",
+    settings: "Pengaturan",
+    audit: "Audit",
+    more: "Lainnya",
+    searchLabel: "Cari pesanan atau pelanggan",
+    searchPlaceholder: "Cari pesanan atau nama",
+    search: "Cari",
+  },
+  common: {
+    appName: "LaundrySIA",
+    skipToContent: "Lewati ke konten",
+    logOut: "Keluar",
+    closeDialog: "Tutup dialog",
+    comingSoon: "Halaman ini sedang disiapkan",
+    comingSoonBody: "Isi halaman akan ditambahkan pada tahap berikutnya.",
+  },
+  roles: {
+    CASHIER: "Kasir",
+    MANAGER: "Manajer",
+  },
 };
 
 const en: Dictionary = {
@@ -120,6 +220,52 @@ const en: Dictionary = {
     supplyQuantity: "Quantity must be greater than 0 and at most 9,999.99.",
     totalCost: "Total cost must be greater than 0.",
     openingAmount: "Enter at least one opening balance greater than 0.",
+  },
+  auth: {
+    title: "Log in",
+    lead: "Log in to start recording orders and payments.",
+    username: "Username",
+    password: "Password",
+    submit: "Log in",
+    showPassword: "Show password",
+    hidePassword: "Hide password",
+    invalidCredentials: "Username or password is not correct.",
+    inactiveAccount: "This account is deactivated. Contact a manager.",
+    sessionEnded: "Your session ended because your account was deactivated.",
+    loggedOut: "You have been logged out.",
+    managerOnly: "Only a manager can open that page.",
+    unavailable: "Cannot log in right now. Please try again shortly.",
+  },
+  nav: {
+    primary: "Main navigation",
+    menu: "Menu",
+    dashboard: "Dashboard",
+    counter: "Counter",
+    newOrder: "New order",
+    orders: "Orders",
+    customers: "Customers",
+    receivables: "Receivables",
+    expenses: "Expenses",
+    stock: "Stock",
+    reports: "Reports",
+    settings: "Settings",
+    audit: "Audit",
+    more: "More",
+    searchLabel: "Search orders or customers",
+    searchPlaceholder: "Search order or name",
+    search: "Search",
+  },
+  common: {
+    appName: "LaundrySIA",
+    skipToContent: "Skip to content",
+    logOut: "Log out",
+    closeDialog: "Close dialog",
+    comingSoon: "This page is being prepared",
+    comingSoonBody: "The page content will be added in a later phase.",
+  },
+  roles: {
+    CASHIER: "Cashier",
+    MANAGER: "Manager",
   },
 };
 

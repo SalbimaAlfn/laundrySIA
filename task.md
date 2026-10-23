@@ -129,26 +129,30 @@ A task is done only when its own acceptance checks **and** these pass.
 
 ## E. Phase 2: Authentication and app shell
 
-- [ ] **T-020 (P1) Login and sessions** (FR-01, FR-02, FR-04)
+- [x] **T-020 (P1) Login and sessions** (FR-01, FR-02, FR-04)
   - Depends on: T-012
   - Do: `bcryptjs` for password check. Sign a session token with `jose` (HS256, secret from env) and store it in an httpOnly, SameSite=Lax, Secure-in-production cookie. Provide `getSession()`, `requireUser()`, and `requireRole(role)` in `src/server/auth.ts`. Reject inactive users on every request.
   - Do: login page per `design.md` 7.1, logout action, redirect after login (cashier to `/counter`, manager to `/dashboard`).
   - Accept: wrong password shows "Username or password is not correct." Inactive users cannot log in. Direct URL access without a session redirects to `/login`. Tests cover `requireRole` allow and deny.
+  - Notes: tokens live in `src/server/session.ts`; `getSession` reads the DB on every call so a deactivated user is rejected immediately. Login is covered by a real-database test in `src/server/actions/auth.test.ts`.
 
-- [ ] **T-021 (P1) Route protection**
+- [x] **T-021 (P1) Route protection**
   - Depends on: T-020
   - Do: middleware that redirects anonymous users to `/login`. Every manager page and action also calls `requireRole("MANAGER")` itself (middleware is not the only guard). Cashier hitting a manager URL is sent to `/counter` with the message from `PRD.md` section 14.
   - Accept: a manual or automated check proves a cashier cannot open `/dashboard`, `/reports/*`, `/expenses`, `/stock`, `/settings/*`, `/audit`, and cannot call the related actions.
+  - Notes: Next 16 uses `src/proxy.ts` for the optimistic anonymous redirect. Manager pages call `requireRole`; a cashier is redirected to `/counter?notice=manager-only`.
 
-- [ ] **T-022 (P1) App shell and navigation**
+- [x] **T-022 (P1) App shell and navigation**
   - Depends on: T-004, T-021
   - Do: the sidebar layout, tablet rail, and mobile bottom tab bar from `design.md` section 6. Manager-only items are not rendered for cashiers. Name and role with a Log out button at the bottom.
   - Accept: the layout works at 360px, 768px, and 1280px widths. Active item uses Honey fill. Tab order is logical.
+  - Notes: `src/components/app-shell/app-shell.tsx` renders the Espresso sidebar, 72px tablet rail, and mobile tabs with the raised New order button and More dialog.
 
-- [ ] **T-023 (P1) Audit helper** (FR-70)
+- [x] **T-023 (P1) Audit helper** (FR-70)
   - Depends on: T-010, T-020
   - Do: `writeAudit(tx, { userId, action, entityType, entityId, detail })` that works inside a transaction. Use it in login, and in every later action.
   - Accept: a test shows an audit row is created and is rolled back together with a failed transaction.
+  - Notes: `src/server/audit.ts` takes `Prisma.TransactionClient`; login records success and failed attempts. `src/server/audit.test.ts` proves commit and rollback against `laundrysia_test`.
 
 ---
 

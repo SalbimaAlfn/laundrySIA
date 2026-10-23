@@ -24,6 +24,8 @@ export type FieldProps = {
   hint?: string;
   error?: string;
   children: ReactNode;
+  /** Optional control rendered beside the input, such as a show-password toggle. */
+  action?: ReactNode;
   className?: string;
 };
 
@@ -31,7 +33,7 @@ export type FieldProps = {
  * Label, control, helper text, and error in one block. The child control gets
  * the id and ARIA wiring automatically, so errors are always announced.
  */
-export function Field({ htmlFor, label, hint, error, children, className }: FieldProps) {
+export function Field({ htmlFor, label, hint, error, children, action, className }: FieldProps) {
   const describedBy = error ? `${htmlFor}-error` : hint ? `${htmlFor}-hint` : undefined;
 
   const control = isValidElement<ControlProps>(children)
@@ -48,7 +50,14 @@ export function Field({ htmlFor, label, hint, error, children, className }: Fiel
       <label className={styles.label} htmlFor={htmlFor}>
         {label}
       </label>
-      {control}
+      {action ? (
+        <div className={styles.controlRow}>
+          {control}
+          {action}
+        </div>
+      ) : (
+        control
+      )}
       {error ? (
         <p id={`${htmlFor}-error`} className={styles.error}>
           <CircleAlert aria-hidden="true" size={14} />

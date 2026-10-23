@@ -13,6 +13,13 @@
   line-height: 20px;
 }
 
+.controlRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
 .control {
   width: 100%;
   height: var(--field-h);
