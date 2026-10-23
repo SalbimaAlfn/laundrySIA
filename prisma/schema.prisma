@@ -1,0 +1,12 @@
+// LaundrySIA database schema.
+// The full model set is added in task T-010. This file starts with the
+// datasource and client generator so the connection can be verified first.
+
+datasource db {
+  provider = "mysql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}

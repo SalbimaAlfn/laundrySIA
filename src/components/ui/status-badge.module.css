@@ -1,0 +1,42 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.received {
+  background: var(--received-bg);
+  color: var(--received-fg);
+}
+
+.washing {
+  background: var(--washing-bg);
+  color: var(--washing-fg);
+}
+
+.drying {
+  background: var(--drying-bg);
+  color: var(--drying-fg);
+}
+
+.ready {
+  background: var(--ready-bg);
+  color: var(--ready-fg);
+}
+
+.completed {
+  background: var(--paid-bg);
+  color: var(--paid-fg);
+}
+
+.void {
+  background: var(--danger-bg);
+  color: var(--danger-fg);
+}
