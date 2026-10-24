@@ -1,0 +1,58 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  max-width: 720px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  color: var(--text);
+  text-decoration: none;
+  transition: background-color 120ms ease;
+}
+
+.card:hover {
+  background: var(--bg-hover);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  background: var(--cream-soft);
+  border-radius: var(--r-control);
+  color: var(--ember-text);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.lead {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.chevron {
+  margin-left: auto;
+  color: var(--text-muted);
+  flex: none;
+}

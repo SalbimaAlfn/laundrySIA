@@ -84,6 +84,83 @@ export type CommonMessages = {
   closeDialog: string;
   comingSoon: string;
   comingSoonBody: string;
+  cancel: string;
+  save: string;
+  genericError: string;
+};
+
+export type CustomerMessages = {
+  title: string;
+  lead: string;
+  searchLabel: string;
+  searchPlaceholder: string;
+  search: string;
+  searching: string;
+  add: string;
+  addTitle: string;
+  editTitle: string;
+  name: string;
+  phone: string;
+  phoneHint: string;
+  address: string;
+  addressHint: string;
+  save: string;
+  cancel: string;
+  savedCreate: string;
+  savedUpdate: string;
+  duplicatePhone: string;
+  empty: string;
+  emptySearch: string;
+  noResults: string;
+  listCaption: string;
+  status: string;
+  active: string;
+  inactive: string;
+  activate: string;
+  deactivate: string;
+  activated: string;
+  deactivated: string;
+  inactiveHint: string;
+  edit: string;
+  quickAdd: string;
+  quickAddTitle: string;
+  quickAddHint: string;
+  selected: string;
+};
+
+export type ServiceMessages = {
+  title: string;
+  lead: string;
+  add: string;
+  addTitle: string;
+  editTitle: string;
+  name: string;
+  nameHint: string;
+  unit: string;
+  unitKg: string;
+  unitPiece: string;
+  price: string;
+  priceHint: string;
+  turnaround: string;
+  turnaroundUnit: string;
+  turnaroundHint: string;
+  status: string;
+  active: string;
+  inactive: string;
+  activate: string;
+  deactivate: string;
+  activated: string;
+  deactivated: string;
+  savedCreate: string;
+  savedUpdate: string;
+  priceChanged: string;
+  duplicate: string;
+  empty: string;
+  listCaption: string;
+  edit: string;
+  save: string;
+  cancel: string;
+  isActive: string;
 };
 
 export type RoleMessages = {
@@ -97,6 +174,8 @@ export type Dictionary = {
   nav: NavMessages;
   common: CommonMessages;
   roles: RoleMessages;
+  customers: CustomerMessages;
+  services: ServiceMessages;
 };
 
 const id: Dictionary = {
@@ -177,10 +256,85 @@ const id: Dictionary = {
     closeDialog: "Tutup dialog",
     comingSoon: "Halaman ini sedang disiapkan",
     comingSoonBody: "Isi halaman akan ditambahkan pada tahap berikutnya.",
+    cancel: "Batal",
+    save: "Simpan",
+    genericError: "Tidak dapat menyimpan sekarang. Coba lagi sebentar lagi.",
   },
   roles: {
     CASHIER: "Kasir",
     MANAGER: "Manajer",
+  },
+  customers: {
+    title: "Pelanggan",
+    lead: "Cari pelanggan, atau tambahkan yang baru.",
+    searchLabel: "Cari pelanggan",
+    searchPlaceholder: "Nama atau nomor telepon",
+    search: "Cari",
+    searching: "Mencari pelanggan...",
+    add: "Tambah pelanggan",
+    addTitle: "Pelanggan baru",
+    editTitle: "Ubah pelanggan",
+    name: "Nama",
+    phone: "Nomor telepon",
+    phoneHint: "Contoh 0812 3456 7890. Satu nomor hanya untuk satu pelanggan.",
+    address: "Alamat (opsional)",
+    addressHint: "Maksimal 200 karakter.",
+    save: "Simpan pelanggan",
+    cancel: "Batal",
+    savedCreate: "Pelanggan ditambahkan.",
+    savedUpdate: "Perubahan pelanggan disimpan.",
+    duplicatePhone: "Pelanggan dengan nomor telepon ini sudah terdaftar. Pilih pelanggan tersebut.",
+    empty: "Belum ada pelanggan. Tambahkan pelanggan pertama.",
+    emptySearch: "Tidak ada pelanggan yang cocok. Coba nama atau nomor lain.",
+    noResults: "Tidak ada pelanggan yang cocok.",
+    listCaption: "Daftar pelanggan",
+    status: "Status",
+    active: "Aktif",
+    inactive: "Nonaktif",
+    activate: "Aktifkan",
+    deactivate: "Nonaktifkan",
+    activated: "Pelanggan diaktifkan.",
+    deactivated: "Pelanggan dinonaktifkan.",
+    inactiveHint: "Pelanggan nonaktif disembunyikan saat membuat pesanan baru.",
+    edit: "Ubah",
+    quickAdd: "Tambah pelanggan baru",
+    quickAddTitle: "Pelanggan baru",
+    quickAddHint: "Pelanggan langsung terpilih setelah disimpan.",
+    selected: "Pelanggan terpilih",
+  },
+  services: {
+    title: "Layanan dan harga",
+    lead: "Atur layanan yang bisa dipilih saat membuat pesanan.",
+    add: "Tambah layanan",
+    addTitle: "Layanan baru",
+    editTitle: "Ubah layanan",
+    name: "Nama layanan",
+    nameHint: "Contoh Cuci kering, Cuci setrika, Setrika saja.",
+    unit: "Satuan",
+    unitKg: "Kg",
+    unitPiece: "Satuan",
+    price: "Harga",
+    priceHint: "Per kg atau per satuan, dalam rupiah.",
+    turnaround: "Estimasi selesai",
+    turnaroundUnit: "hari",
+    turnaroundHint: "0 berarti selesai di hari yang sama.",
+    status: "Status",
+    active: "Aktif",
+    inactive: "Nonaktif",
+    activate: "Aktifkan",
+    deactivate: "Nonaktifkan",
+    activated: "Layanan diaktifkan.",
+    deactivated: "Layanan dinonaktifkan.",
+    savedCreate: "Layanan ditambahkan.",
+    savedUpdate: "Perubahan layanan disimpan.",
+    priceChanged: "Harga layanan diubah. Pesanan lama tidak berubah.",
+    duplicate: "Nama layanan sudah dipakai. Pilih nama lain.",
+    empty: "Belum ada layanan. Tambahkan layanan pertama.",
+    listCaption: "Daftar layanan",
+    edit: "Ubah",
+    save: "Simpan layanan",
+    cancel: "Batal",
+    isActive: "Layanan aktif dan bisa dipilih saat membuat pesanan",
   },
 };
 
@@ -262,10 +416,85 @@ const en: Dictionary = {
     closeDialog: "Close dialog",
     comingSoon: "This page is being prepared",
     comingSoonBody: "The page content will be added in a later phase.",
+    cancel: "Cancel",
+    save: "Save",
+    genericError: "Cannot save right now. Please try again shortly.",
   },
   roles: {
     CASHIER: "Cashier",
     MANAGER: "Manager",
+  },
+  customers: {
+    title: "Customers",
+    lead: "Find a customer, or add a new one.",
+    searchLabel: "Search customers",
+    searchPlaceholder: "Name or phone number",
+    search: "Search",
+    searching: "Searching customers...",
+    add: "Add customer",
+    addTitle: "New customer",
+    editTitle: "Edit customer",
+    name: "Name",
+    phone: "Phone number",
+    phoneHint: "For example 0812 3456 7890. One number belongs to one customer.",
+    address: "Address (optional)",
+    addressHint: "At most 200 characters.",
+    save: "Save customer",
+    cancel: "Cancel",
+    savedCreate: "Customer added.",
+    savedUpdate: "Customer changes saved.",
+    duplicatePhone: "A customer with this phone number already exists. Select them instead.",
+    empty: "No customers yet. Add the first customer.",
+    emptySearch: "No customers match. Try another name or number.",
+    noResults: "No customers match.",
+    listCaption: "Customer list",
+    status: "Status",
+    active: "Active",
+    inactive: "Inactive",
+    activate: "Activate",
+    deactivate: "Deactivate",
+    activated: "Customer activated.",
+    deactivated: "Customer deactivated.",
+    inactiveHint: "Inactive customers are hidden when creating a new order.",
+    edit: "Edit",
+    quickAdd: "Add a new customer",
+    quickAddTitle: "New customer",
+    quickAddHint: "The customer is selected automatically after saving.",
+    selected: "Selected customer",
+  },
+  services: {
+    title: "Services and prices",
+    lead: "Set the services available when creating an order.",
+    add: "Add service",
+    addTitle: "New service",
+    editTitle: "Edit service",
+    name: "Service name",
+    nameHint: "For example Wash and dry, Wash and iron, Iron only.",
+    unit: "Unit",
+    unitKg: "Kg",
+    unitPiece: "Piece",
+    price: "Price",
+    priceHint: "Per kg or per piece, in rupiah.",
+    turnaround: "Turnaround",
+    turnaroundUnit: "days",
+    turnaroundHint: "0 means ready the same day.",
+    status: "Status",
+    active: "Active",
+    inactive: "Inactive",
+    activate: "Activate",
+    deactivate: "Deactivate",
+    activated: "Service activated.",
+    deactivated: "Service deactivated.",
+    savedCreate: "Service added.",
+    savedUpdate: "Service changes saved.",
+    priceChanged: "Service price changed. Existing orders are unchanged.",
+    duplicate: "That service name is already used. Choose another name.",
+    empty: "No services yet. Add the first service.",
+    listCaption: "Service list",
+    edit: "Edit",
+    save: "Save service",
+    cancel: "Cancel",
+    isActive: "Service is active and can be chosen when creating an order",
   },
 };
 

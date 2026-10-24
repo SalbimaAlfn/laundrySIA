@@ -1,0 +1,154 @@
+.wrap {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+}
+
+.labelRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.label {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.hint {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.inputRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: var(--s-3);
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.input {
+  padding-left: 40px;
+}
+
+.status {
+  margin-top: var(--s-2);
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.popover {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-float);
+  overflow: hidden;
+}
+
+.list {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.option {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-4);
+  min-height: var(--tap);
+  padding: var(--s-3) var(--s-4);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+
+.optionActive {
+  background: var(--bg-hover);
+}
+
+.optionName {
+  font-size: 15px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.optionPhone {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+  min-height: var(--tap);
+  padding: var(--s-3) var(--s-4);
+  background: transparent;
+  border: 0;
+  color: var(--text-link);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.addButton:hover {
+  background: var(--bg-hover);
+}
+
+.addForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.dialogHint {
+  margin-bottom: var(--s-4);
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-3);
+  margin-top: var(--s-2);
+}
+
+.formError {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  background: var(--danger-bg);
+  border-radius: var(--r-control);
+  color: var(--danger-fg);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.formError svg {
+  flex: none;
+  margin-top: 2px;
+}
