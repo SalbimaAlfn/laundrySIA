@@ -158,28 +158,28 @@ A task is done only when its own acceptance checks **and** these pass.
 
 ## F. Phase 3: Accounting engine (build and test before any screen uses it)
 
-- [ ] **T-030 (P1) Journal core** (FR-50, FR-54)
+- [x] **T-030 (P1) Journal core** (FR-50, FR-54)
   - Depends on: T-010, T-011
   - Do: `src/server/accounting/journal.ts` with `postEntry(tx, { date, description, refType, refId, lines, createdById, reversesEntryId? })`. It must: load accounts by code, verify every line has exactly one positive side, verify total debit equals total credit (throw a typed error if not), then insert the entry and lines.
   - Do: `reverseEntry(tx, entryId, createdById)` creating a mirror entry with debit and credit swapped.
   - Accept: tests prove unbalanced entries are rejected, negative amounts are rejected, and reversing an entry nets the account balances to zero.
 
-- [ ] **T-031 (P1) Posting rules for orders and payments**
+- [x] **T-031 (P1) Posting rules for orders and payments**
   - Depends on: T-030
   - Do: `postOrderEntry(tx, order, initialPayment?)` and `postPaymentEntry(tx, payment)` following `PRD.md` section 8.2 exactly (Cash for CASH, Bank for TRANSFER and EWALLET).
   - Accept: tests for pay in full, deposit, pay later, a later payment, and a zero-total order.
 
-- [ ] **T-032 (P1) Posting rules for expenses, purchases, usage, opening capital**
+- [x] **T-032 (P1) Posting rules for expenses, purchases, usage, opening capital**
   - Depends on: T-030
   - Do: `postExpenseEntry`, `postPurchaseEntry`, `postUsageEntry` (weighted average cost per `PRD.md` section 8.2), `postOpeningEntry`.
   - Accept: tests for each, including weighted average cost after two purchases at different prices.
 
-- [ ] **T-033 (P1) Void reversal**
+- [x] **T-033 (P1) Void reversal**
   - Depends on: T-031
   - Do: `reverseOrderEntries(tx, orderId, userId)` that finds all entries for the order and its payments (rule in `PRD.md` section 8.2) and reverses each.
   - Accept: tests voiding an order with no payment, with a deposit, and with a later payment. Account balances return to what they were before the order.
 
-- [ ] **T-034 (P1) Balance queries**
+- [x] **T-034 (P1) Balance queries**
   - Depends on: T-030
   - Do: `src/server/accounting/queries.ts`: `accountBalance(code, asOf)`, `trialBalance(asOf)`, `ledger(code, from, to)`. Use SQL aggregation (sum of debit, sum of credit), not loops over all rows.
   - Accept: tests confirm trial balance debits equal credits after the scenario in `PRD.md` section 13.
