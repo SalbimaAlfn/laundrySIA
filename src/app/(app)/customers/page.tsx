@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CustomersManager } from "@/components/customers/customers-manager";
 import { getDictionary } from "@/lib/i18n";
+import { phoneSearchTerm } from "@/lib/phone";
 import { requireUser } from "@/server/auth";
 import { db } from "@/server/db";
 
@@ -16,7 +17,7 @@ export default async function CustomersPage({
   const session = await requireUser();
   const rawQuery = (await searchParams).q;
   const query = (Array.isArray(rawQuery) ? rawQuery[0] : rawQuery)?.trim() ?? "";
-  const digits = query.replace(/\D/g, "");
+  const digits = phoneSearchTerm(query);
 
   const customers = await db.customer.findMany({
     where:

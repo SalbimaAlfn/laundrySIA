@@ -1,4 +1,4 @@
-const { execSync } = require("child_process");
+import { execSync } from "child_process";
 const cmds = {
   typecheck: "node node_modules/typescript/bin/tsc --noEmit",
   lint: "node node_modules/eslint/bin/eslint.js .",

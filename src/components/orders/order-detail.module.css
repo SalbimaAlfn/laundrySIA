@@ -1,0 +1,358 @@
+.page {
+  padding: 24px 32px;
+  max-width: 1200px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ember-text);
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.headerMain {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.invoice {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--espresso);
+  margin: 0;
+}
+
+.date {
+  color: var(--bark);
+  font-size: 14px;
+  margin: 0;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.received {
+  background: var(--Received-bg);
+  color: var(--Received);
+}
+
+.washing {
+  background: var(--Washing-bg);
+  color: var(--Washing);
+}
+
+.drying_ironing {
+  background: var(--Drying / ironing-bg);
+  color: var(--Drying / ironing);
+}
+
+.ready {
+  background: var(--Ready for pickup-bg);
+  color: var(--Ready for pickup);
+}
+
+.completed {
+  background: var(--Paid / completed-bg);
+  color: var(--Paid / completed);
+}
+
+.void {
+  background: var(--Void / error-bg);
+  color: var(--Void / error);
+}
+
+/* Progress Track */
+.progress {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 0;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.progressStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.progressCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid var(--sand-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bark);
+  transition: all 0.2s ease;
+}
+
+.progressCircle.done {
+  background: var(--espresso);
+  border-color: var(--espresso);
+  color: var(--cream);
+}
+
+.progressCircle.current {
+  background: var(--honey);
+  border-color: var(--ember);
+  color: var(--espresso);
+  box-shadow: 0 0 0 3px var(--ember-bg, rgba(204, 111, 0, 0.15));
+}
+
+.progressLabel {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--bark);
+  text-align: center;
+  max-width: 80px;
+}
+
+.progressLabel.active {
+  color: var(--espresso);
+  font-weight: 500;
+}
+
+.progressLine {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--sand-strong);
+  z-index: -1;
+}
+
+.progressLine.lineDone {
+  background: var(--espresso);
+}
+
+/* Grid Layout */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--sand);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--espresso);
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.customerName {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--espresso);
+  margin: 0 0 4px 0;
+}
+
+.customerPhone {
+  color: var(--bark);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Tables */
+.itemsTable,
+.paymentsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.itemsTable th,
+.paymentsTable th {
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--cream-soft);
+  color: var(--espresso);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.itemsTable td,
+.paymentsTable td {
+  padding: 12px;
+  border-bottom: 1px solid var(--sand);
+}
+
+.itemsTable tr:last-child td,
+.paymentsTable tr:last-child td {
+  border-bottom: none;
+}
+
+.right {
+  text-align: right;
+}
+
+.unitLabel {
+  display: block;
+  font-size: 12px;
+  color: var(--bark);
+  margin-top: 2px;
+}
+
+/* Totals */
+.totals {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--sand);
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 14px;
+}
+
+.totalRow strong {
+  font-weight: 600;
+}
+
+/* Balance */
+.balanceRows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.balanceRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--bark);
+}
+
+.grandBalance {
+  padding-top: 12px;
+  margin-top: 4px;
+  border-top: 2px solid var(--sand);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--espresso);
+}
+
+.paidLabel {
+  color: var(--Paid / completed);
+}
+
+/* Pickup Date */
+.pickupDate {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--espresso);
+  margin: 0;
+}
+
+/* Note */
+.note {
+  font-size: 14px;
+  color: var(--bark);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.advanceButton {
+  width: 100%;
+}
+
+.receiveButton {
+  width: 100%;
+}
+
+/* Void Info */
+.voidInfo {
+  background: var(--Void / error-bg);
+  border: 1px solid var(--Void / error);
+  border-radius: 12px;
+  padding: 16px;
+  color: var(--Void / error);
+}
+
+.voidLabel {
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.voidInfo p {
+  margin: 0;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 16px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .progress {
+    overflow-x: auto;
+    padding-bottom: 16px;
+  }
+
+  .progressLabel {
+    font-size: 11px;
+    max-width: 60px;
+  }
+}

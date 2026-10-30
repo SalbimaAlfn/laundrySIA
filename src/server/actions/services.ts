@@ -160,12 +160,15 @@ export async function updateServiceAction(
   }
 }
 
-export async function toggleServiceActiveAction(formData: FormData): Promise<void> {
+export async function toggleServiceActiveAction(formData: FormData): Promise<boolean> {
   const session = await requireRole("MANAGER");
   const id = Number(formData.get("id"));
-  if (!Number.isInteger(id) || id <= 0) return;
+  const activeValue = formData.get("isActive");
+  if (!Number.isInteger(id) || id <= 0 || (activeValue !== "true" && activeValue !== "false")) {
+    return false;
+  }
 
-  const isActive = formData.get("isActive") === "true";
+  const isActive = activeValue === "true";
 
   await db.$transaction(async (tx) => {
     const service = await tx.service.update({
@@ -183,4 +186,5 @@ export async function toggleServiceActiveAction(formData: FormData): Promise<voi
 
   revalidatePath("/settings/services");
   revalidatePath("/orders/new");
+  return true;
 }

@@ -132,9 +132,7 @@ export function CustomerSearch({
   useEffect(() => {
     const trimmed = query.trim();
     if (trimmed.length === 0) {
-      setResults([]);
-      setActiveIndex(-1);
-      setLoading(false);
+      // Reset state synchronously for empty query - this is intentional cleanup
       return;
     }
 

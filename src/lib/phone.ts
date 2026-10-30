@@ -13,11 +13,16 @@ export function normalizePhone(input: string): string {
     return `0${compact.slice(3).replace(/\D/g, "")}`;
   }
 
-  if (compact.startsWith("62") && compact.length >= 11) {
+  if (compact.startsWith("62") && compact.length >= 3) {
     return `0${compact.slice(2).replace(/\D/g, "")}`;
   }
 
   return compact.replace(/\D/g, "");
+}
+
+export function phoneSearchTerm(input: string): string {
+  if (/[^\d+\s\-().]/.test(input)) return "";
+  return normalizePhone(input).replace(/\D/g, "");
 }
 
 /** A valid local number is 9 to 14 digits and starts with 0. */

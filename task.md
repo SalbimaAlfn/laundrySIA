@@ -188,12 +188,12 @@ A task is done only when its own acceptance checks **and** these pass.
 
 ## G. Phase 4: Customers and services
 
-- [ ] **T-040 (P1) Customers** (FR-10, FR-13)
+- [x] **T-040 (P1) Customers** (FR-10, FR-13)
   - Depends on: T-013, T-022, T-023
   - Do: customer list page, add and edit forms, a `CustomerSearch` combobox (search as you type by name or phone, show phone beside the name, keyboard navigable, 250ms debounce). Add-customer must also work inside the order screen without leaving it.
   - Accept: duplicate phone is rejected with the message in `design.md` section 13. Search matches partial names and partial phone numbers. Deactivated customers are hidden from search for new orders.
 
-- [ ] **T-041 (P1) Services and prices** (FR-11, FR-72)
+- [x] **T-041 (P1) Services and prices** (FR-11, FR-72)
   - Depends on: T-013, T-022, T-023
   - Do: manager-only services page: list, add, edit, activate or deactivate. No delete. A price change writes an audit row with old and new price.
   - Accept: a cashier cannot reach the page or call the action. Changing a price does not change any existing order.

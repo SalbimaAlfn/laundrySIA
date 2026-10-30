@@ -71,7 +71,7 @@ beforeAll(async () => {
     { code: "4-100", name: "Pendapatan Jasa", type: "REVENUE" },
   ] as const;
   for (const a of accounts) {
-    await db.account.upsert({ where: { code: a.code }, update: {}, create: a as any });
+    await db.account.upsert({ where: { code: a.code }, update: {}, create: a });
   }
 
   const user = await db.user.upsert({

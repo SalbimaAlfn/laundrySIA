@@ -38,7 +38,7 @@ beforeAll(async () => {
     { code: "4-100", name: "Pendapatan Jasa", type: "REVENUE" },
   ] as const;
   for (const a of accounts) {
-    await db.account.upsert({ where: { code: a.code }, update: {}, create: a as any });
+    await db.account.upsert({ where: { code: a.code }, update: {}, create: a });
   }
 
   const user = await db.user.upsert({
@@ -94,7 +94,7 @@ async function createOrder(id: number, total: number) {
 describe("reverseOrderEntries", () => {
   it("voids an order with no payment", async () => {
     await createOrder(999101, 70_000);
-    const before = await db.$transaction((tx) => postOrderEntry(tx, { id: 999101, total: 70_000 }, null, userId));
+    await db.$transaction((tx) => postOrderEntry(tx, { id: 999101, total: 70_000 }, null, userId));
     await db.$transaction((tx) => reverseOrderEntries(tx, 999101, userId));
 
     // All entries for order and its payments should be reversed
@@ -104,9 +104,6 @@ describe("reverseOrderEntries", () => {
     });
     // Should have original + reversal
     expect(entries.length).toBe(2);
-    for (const e of entries) {
-      // Each should have lines that net to zero when paired
-    }
   });
 
   it("voids an order with a deposit", async () => {

@@ -144,7 +144,7 @@ export function ServicesManager({ services }: { services: ServiceRecord[] }) {
     formData.set("isActive", String(!service.isActive));
 
     startTransition(async () => {
-      await toggleServiceActiveAction(formData);
+      if (!(await toggleServiceActiveAction(formData))) return;
       show(service.isActive ? t.services.deactivated : t.services.activated);
     });
   }

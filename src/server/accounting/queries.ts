@@ -1,28 +1,22 @@
 import { Prisma } from "@/generated/prisma/client";
-import { parseBusinessDate, startOfDayWIB } from "@/lib/dates";
+import { businessDate } from "@/lib/dates";
 
 async function getDb() {
   const mod = await import("@/server/db");
   return mod.db;
 }
 
-function toDateString(value: Date | string): string {
+function toDateString(value: Date | string = new Date()): string {
   if (typeof value === "string") {
-    // assume YYYY-MM-DD
     if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
-    return parseBusinessDate(value).toISOString().slice(0, 10);
+    return businessDate(new Date(value));
   }
-  const d = startOfDayWIB(value);
-  const [y, m, day] = d.toISOString().slice(0, 10).split("-");
-  // better use business date
-  const { businessDate } = require("@/lib/dates");
   return businessDate(value);
 }
 
 export async function accountBalance(code: string, asOf?: Date | string): Promise<number> {
   const db = await getDb();
-  const { businessDate } = await import("@/lib/dates");
-  const asOfDateStr = typeof asOf === "string" && /^\d{4}-\d{2}-\d{2}$/.test(asOf) ? asOf : businessDate(asOf ? (typeof asOf === "string" ? parseBusinessDate(asOf) : asOf) : new Date());
+  const asOfDateStr = toDateString(asOf ?? new Date());
   const result = await db.$queryRaw<Array<{ balance: bigint | number | null }>>(
     Prisma.sql`
       SELECT COALESCE(SUM(l.debit) - SUM(l.credit), 0) as balance
@@ -48,8 +42,7 @@ export type TrialBalanceRow = {
 
 export async function trialBalance(asOf?: Date | string): Promise<TrialBalanceRow[]> {
   const db = await getDb();
-  const { businessDate } = await import("@/lib/dates");
-  const asOfDateStr = typeof asOf === "string" && /^\d{4}-\d{2}-\d{2}$/.test(asOf) ? asOf : businessDate(asOf ? (typeof asOf === "string" ? parseBusinessDate(asOf) : asOf) : new Date());
+  const asOfDateStr = toDateString(asOf ?? new Date());
   const results = await db.$queryRaw<
     Array<{
       code: string;
@@ -96,9 +89,8 @@ export async function ledger(
   to: Date | string,
 ): Promise<LedgerRow[]> {
   const db = await getDb();
-  const { businessDate } = await import("@/lib/dates");
-  const fromStr = typeof from === "string" && /^\d{4}-\d{2}-\d{2}$/.test(from) ? from : businessDate(typeof from === "string" ? parseBusinessDate(from) : from);
-  const toStr = typeof to === "string" && /^\d{4}-\d{2}-\d{2}$/.test(to) ? to : businessDate(typeof to === "string" ? parseBusinessDate(to) : to);
+  const fromStr = toDateString(from);
+  const toStr = toDateString(to);
   const results = await db.$queryRaw<
     Array<{
       entryId: number;

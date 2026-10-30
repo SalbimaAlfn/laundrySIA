@@ -1,0 +1,193 @@
+.page {
+  padding: 24px 32px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.lead {
+  font-size: 16px;
+  color: var(--bark);
+}
+
+.newButton {
+  text-decoration: none;
+}
+
+.filters {
+  background: var(--paper);
+  border: 1px solid var(--sand-strong);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.filterRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.filterSelect,
+.filterDate,
+.filterInput {
+  min-width: 140px;
+}
+
+.filterSelect {
+  width: 160px;
+}
+
+.filterDate {
+  width: 150px;
+}
+
+.filterInput {
+  width: 180px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.statusReceived {
+  background: var(--Received-bg);
+  color: var(--Received);
+}
+
+.statusWashing {
+  background: var(--Washing-bg);
+  color: var(--Washing);
+}
+
+.statusDrying {
+  background: var(--Drying / ironing-bg);
+  color: var(--Drying / ironing);
+}
+
+.statusReady {
+  background: var(--Ready for pickup-bg);
+  color: var(--Ready for pickup);
+}
+
+.statusCompleted {
+  background: var(--Paid / completed-bg);
+  color: var(--Paid / completed);
+}
+
+.statusVoid {
+  background: var(--Void / error-bg);
+  color: var(--Void / error);
+}
+
+.invoiceLink {
+  font-weight: 600;
+  color: var(--espresso);
+  text-decoration: none;
+}
+
+.invoiceLink:hover {
+  color: var(--ember-text);
+  text-decoration: underline;
+}
+
+.customer {
+  color: var(--bark);
+}
+
+.balance {
+  color: var(--ember-text);
+  font-weight: 500;
+}
+
+.paid {
+  color: var(--bark);
+}
+
+.rowActions {
+  display: flex;
+  gap: 8px;
+}
+
+.viewLink {
+  color: var(--ember-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.viewLink:hover {
+  text-decoration: underline;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--sand);
+}
+
+.pageInfo {
+  color: var(--bark);
+  font-size: 14px;
+}
+
+.pageButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.pageLink {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: var(--paper);
+  border: 1px solid var(--sand-strong);
+  border-radius: 8px;
+  color: var(--espresso);
+  text-decoration: none;
+  font-size: 14px;
+  transition: background 0.12s ease;
+}
+
+.pageLink:hover {
+  background: var(--cream-soft);
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 16px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .filterRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterSelect,
+  .filterDate,
+  .filterInput {
+    width: 100%;
+    min-width: unset;
+  }
+}

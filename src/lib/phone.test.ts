@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isValidPhone, normalizePhone } from "./phone";
+import { isValidPhone, normalizePhone, phoneSearchTerm } from "./phone";
 
 describe("normalizePhone", () => {
   it("converts the +62 prefix to a local 0", () => {
@@ -35,5 +35,17 @@ describe("isValidPhone", () => {
     expect(isValidPhone("123456789")).toBe(false);
     expect(isValidPhone("+6281234567890")).toBe(false);
     expect(isValidPhone("")).toBe(false);
+  });
+});
+
+describe("phoneSearchTerm", () => {
+  it("matches local and international prefixes while typing", () => {
+    expect(phoneSearchTerm("0812 34")).toBe("081234");
+    expect(phoneSearchTerm("+62 812 34")).toBe("081234");
+    expect(phoneSearchTerm("62 812 34")).toBe("081234");
+  });
+
+  it("does not turn a name into a phone search", () => {
+    expect(phoneSearchTerm("Budi 2")).toBe("");
   });
 });

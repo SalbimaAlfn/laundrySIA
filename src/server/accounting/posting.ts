@@ -1,4 +1,5 @@
 import type { Prisma } from "@/generated/prisma/client";
+import { businessDate, parseBusinessDate } from "@/lib/dates";
 import { JournalError, postEntry } from "./journal";
 
 function getCashOrBankAccount(method: "CASH" | "TRANSFER" | "EWALLET"): string {
@@ -77,15 +78,9 @@ export async function postOrderEntry(
 async function getOrderBusinessDate(tx: Prisma.TransactionClient, orderId: number): Promise<Date> {
   const order = await tx.order.findUnique({
     where: { id: orderId },
-    select: { pickupDate: true, createdAt: true },
+    select: { createdAt: true },
   });
-  if (order?.pickupDate) {
-    return order.pickupDate;
-  }
-  if (order?.createdAt) {
-    return order.createdAt;
-  }
-  return new Date();
+  return parseBusinessDate(businessDate(order?.createdAt ?? new Date()));
 }
 
 export async function postPaymentEntry(
@@ -122,7 +117,10 @@ export async function postPaymentEntry(
   });
 }
 
-async function getPaymentBusinessDate(tx: Prisma.TransactionClient, paymentId: number): Promise<Date> {
+async function getPaymentBusinessDate(
+  tx: Prisma.TransactionClient,
+  paymentId: number,
+): Promise<Date> {
   const payment = await tx.payment.findUnique({
     where: { id: paymentId },
     select: { paidAt: true },
@@ -223,7 +221,10 @@ export async function postPurchaseEntry(
       type: "IN",
       quantity: purchase.quantity,
       totalCost: purchase.totalCost,
-      date: typeof purchase.date === "string" ? new Date(`${purchase.date}T00:00:00+07:00`) : purchase.date,
+      date:
+        typeof purchase.date === "string"
+          ? new Date(`${purchase.date}T00:00:00+07:00`)
+          : purchase.date,
       createdById,
     },
   });
@@ -251,7 +252,7 @@ export async function postUsageEntry(
   },
   createdById: number,
 ): Promise<{ entryId: number }> {
-  if (usage.quantity <= 0 || !Number.isInteger(usage.quantity * 100) && false) {
+  if (usage.quantity <= 0 || (!Number.isInteger(usage.quantity * 100) && false)) {
     // quantity can be decimal in reality, but easier to pass as hundredths? Or just number
   }
   // Accept number as decimal value (e.g., 1.5 kg) - but we need to be careful about precision

@@ -20,6 +20,7 @@ export type ValidationMessages = {
   amountNegative: string;
   amountTooLarge: string;
   discount: string;
+  discountExceedsSubtotal: string;
   note: string;
   items: string;
   quantity: string;
@@ -27,6 +28,7 @@ export type ValidationMessages = {
   paymentType: string;
   paymentMethod: string;
   depositAmount: string;
+  depositMustBeLess: string;
   laterPayment: string;
   paymentTooMuch: string;
   serviceName: string;
@@ -163,9 +165,63 @@ export type ServiceMessages = {
   isActive: string;
 };
 
+export type OrderFormMessages = {
+  title: string;
+  customer: string;
+  services: string;
+  service: string;
+  chooseService: string;
+  kg: string;
+  piece: string;
+  addService: string;
+  removeService: string;
+  quantity: string;
+  unitPrice: string;
+  lineTotal: string;
+  subtotal: string;
+  discount: string;
+  total: string;
+  pickupDate: string;
+  note: string;
+  notePlaceholder: string;
+  paymentNow: string;
+  payInFull: string;
+  deposit: string;
+  payLater: string;
+  amount: string;
+  method: string;
+  cash: string;
+  transfer: string;
+  ewallet: string;
+  paidNow: string;
+  leftToPay: string;
+  saveOrder: string;
+  saved: string;
+  ticket: string;
+  invoicePending: string;
+  newOrder: string;
+  print: string;
+  shopNameFallback: string;
+  noServices: string;
+};
+
 export type RoleMessages = {
   CASHIER: string;
   MANAGER: string;
+};
+
+export type OrderMessages = {
+  title: string; detailTitle: string; lead: string; orders: string; newOrder: string; status: string;
+  statusReceived: string; statusWashing: string; statusDrying: string; statusReady: string;
+  statusCompleted: string; statusVoid: string; date: string; customer: string; total: string;
+  paid: string; balance: string; view: string; allStatus: string; payment: string;
+  allPayment: string; unpaid: string; partial: string; search: string; clear: string;
+  listCaption: string; empty: string; page: string; of: string; previous: string; next: string;
+  customerPlaceholder: string; invoicePlaceholder: string; invoice: string; backToList: string;
+  items: string; service: string; qty: string; unitPrice: string; subtotal: string; discount: string;
+  payments: string; method: string; amount: string; receivedBy: string; summary: string;
+  settled: string; pickupDate: string; note: string; advanceStatus: string; reverseStatus: string;
+  statusAdvanced: string; statusReversed: string; receivePayment: string; voided: string; voidedBy: string;
 };
 
 export type Dictionary = {
@@ -176,6 +232,8 @@ export type Dictionary = {
   roles: RoleMessages;
   customers: CustomerMessages;
   services: ServiceMessages;
+  orderForm: OrderFormMessages;
+  orders: OrderMessages;
 };
 
 const id: Dictionary = {
@@ -195,6 +253,7 @@ const id: Dictionary = {
     amountNegative: "Jumlah tidak boleh negatif.",
     amountTooLarge: "Jumlah terlalu besar.",
     discount: "Diskon tidak boleh negatif.",
+    discountExceedsSubtotal: "Diskon tidak boleh melebihi subtotal.",
     note: "Catatan maksimal 200 karakter.",
     items: "Tambahkan minimal satu layanan, maksimal 20 baris.",
     quantity: "Jumlah harus antara 0,01 dan 999,99.",
@@ -202,6 +261,7 @@ const id: Dictionary = {
     paymentType: "Jenis pembayaran tidak valid.",
     paymentMethod: "Metode pembayaran tidak valid.",
     depositAmount: "Uang muka harus lebih dari 0.",
+    depositMustBeLess: "Uang muka harus lebih kecil dari total.",
     laterPayment: "Pembayaran belakangan tidak boleh menyertakan jumlah.",
     paymentTooMuch: "Jumlah pembayaran melebihi sisa tagihan.",
     serviceName: "Nama layanan harus 2 sampai 80 karakter.",
@@ -336,6 +396,62 @@ const id: Dictionary = {
     cancel: "Batal",
     isActive: "Layanan aktif dan bisa dipilih saat membuat pesanan",
   },
+  orderForm: {
+    title: "Pesanan baru",
+    customer: "Pelanggan",
+    services: "Layanan",
+    service: "Layanan",
+    chooseService: "Pilih layanan",
+    kg: "kg",
+    piece: "satuan",
+    addService: "Tambah layanan",
+    removeService: "Hapus layanan",
+    quantity: "Berat atau jumlah",
+    unitPrice: "Harga satuan",
+    lineTotal: "Jumlah",
+    subtotal: "Subtotal",
+    discount: "Diskon",
+    total: "Total",
+    pickupDate: "Tanggal selesai",
+    note: "Catatan",
+    notePlaceholder: "Catatan untuk pesanan ini (opsional)",
+    paymentNow: "Pembayaran sekarang",
+    payInFull: "Bayar lunas",
+    deposit: "Uang muka",
+    payLater: "Bayar nanti",
+    amount: "Jumlah uang muka",
+    method: "Metode pembayaran",
+    cash: "Tunai",
+    transfer: "Transfer bank",
+    ewallet: "Dompet digital",
+    paidNow: "Dibayar sekarang",
+    leftToPay: "Sisa pembayaran",
+    saveOrder: "Simpan pesanan",
+    saved: "Pesanan disimpan.",
+    ticket: "Tiket klaim",
+    invoicePending: "Nomor dibuat saat disimpan",
+    newOrder: "Pesanan baru",
+    print: "Cetak tiket",
+    shopNameFallback: "Laundry",
+    noServices: "Belum ada layanan aktif. Minta manajer menambahkan layanan.",
+  },
+  orders: {
+    title: "Daftar pesanan", detailTitle: "Detail pesanan", lead: "Total pesanan:", orders: "pesanan", newOrder: "Pesanan baru",
+    status: "Status", statusReceived: "Diterima", statusWashing: "Dicuci", statusDrying: "Pengeringan dan setrika",
+    statusReady: "Siap diambil", statusCompleted: "Selesai", statusVoid: "Dibatalkan", date: "Tanggal",
+    customer: "Pelanggan", total: "Total", paid: "Dibayar", balance: "Sisa", view: "Lihat",
+    allStatus: "Semua status", payment: "Pembayaran", allPayment: "Semua pembayaran", unpaid: "Belum dibayar",
+    partial: "Sebagian", search: "Cari", clear: "Hapus filter", listCaption: "Daftar pesanan",
+    empty: "Pesanan tidak ditemukan.", page: "Halaman", of: "dari", previous: "Sebelumnya", next: "Berikutnya",
+    customerPlaceholder: "Nama atau nomor telepon", invoicePlaceholder: "Nomor invoice", invoice: "Invoice",
+    backToList: "Kembali ke daftar pesanan", items: "Rincian layanan", service: "Layanan", qty: "Jumlah",
+    unitPrice: "Harga satuan", subtotal: "Subtotal", discount: "Diskon", payments: "Riwayat pembayaran",
+    method: "Metode", amount: "Jumlah", receivedBy: "Diterima oleh", summary: "Ringkasan pembayaran",
+    settled: "Lunas", pickupDate: "Tanggal selesai", note: "Catatan", advanceStatus: "Lanjutkan status",
+    reverseStatus: "Kembalikan status", statusAdvanced: "Status pesanan diperbarui.",
+    statusReversed: "Status pesanan dikembalikan.", receivePayment: "Terima pembayaran", voided: "Pesanan dibatalkan",
+    voidedBy: "Dibatalkan oleh",
+  },
 };
 
 const en: Dictionary = {
@@ -355,6 +471,7 @@ const en: Dictionary = {
     amountNegative: "Amount cannot be negative.",
     amountTooLarge: "Amount is too large.",
     discount: "Discount cannot be negative.",
+    discountExceedsSubtotal: "Discount cannot exceed the subtotal.",
     note: "Note must be at most 200 characters.",
     items: "Add at least one service line, up to 20 lines.",
     quantity: "Quantity must be between 0.01 and 999.99.",
@@ -362,6 +479,7 @@ const en: Dictionary = {
     paymentType: "Invalid payment type.",
     paymentMethod: "Invalid payment method.",
     depositAmount: "Deposit must be greater than 0.",
+    depositMustBeLess: "Deposit must be less than the total.",
     laterPayment: "Pay later cannot include an amount.",
     paymentTooMuch: "Payment exceeds the remaining balance.",
     serviceName: "Service name must be 2 to 80 characters.",
@@ -495,6 +613,60 @@ const en: Dictionary = {
     save: "Save service",
     cancel: "Cancel",
     isActive: "Service is active and can be chosen when creating an order",
+  },
+  orderForm: {
+    title: "New order",
+    customer: "Customer",
+    services: "Services",
+    service: "Service",
+    chooseService: "Choose a service",
+    kg: "kg",
+    piece: "piece",
+    addService: "Add service",
+    removeService: "Remove service",
+    quantity: "Weight or quantity",
+    unitPrice: "Unit price",
+    lineTotal: "Amount",
+    subtotal: "Subtotal",
+    discount: "Discount",
+    total: "Total",
+    pickupDate: "Pickup date",
+    note: "Note",
+    notePlaceholder: "Note for this order (optional)",
+    paymentNow: "Payment now",
+    payInFull: "Pay in full",
+    deposit: "Deposit",
+    payLater: "Pay later",
+    amount: "Deposit amount",
+    method: "Payment method",
+    cash: "Cash",
+    transfer: "Bank transfer",
+    ewallet: "E-wallet",
+    paidNow: "Paid now",
+    leftToPay: "Left to pay",
+    saveOrder: "Save order",
+    saved: "Order saved.",
+    ticket: "Claim ticket",
+    invoicePending: "Number assigned when saved",
+    newOrder: "New order",
+    print: "Print ticket",
+    shopNameFallback: "Laundry",
+    noServices: "No active services. Ask a manager to add a service.",
+  },
+  orders: {
+    title: "Orders", detailTitle: "Order details", lead: "Total orders:", orders: "orders", newOrder: "New order", status: "Status",
+    statusReceived: "Received", statusWashing: "Washing", statusDrying: "Drying and ironing", statusReady: "Ready",
+    statusCompleted: "Completed", statusVoid: "Voided", date: "Date", customer: "Customer", total: "Total",
+    paid: "Paid", balance: "Balance", view: "View", allStatus: "All statuses", payment: "Payment",
+    allPayment: "All payments", unpaid: "Unpaid", partial: "Partial", search: "Search", clear: "Clear filters",
+    listCaption: "Order list", empty: "No orders found.", page: "Page", of: "of", previous: "Previous", next: "Next",
+    customerPlaceholder: "Name or phone number", invoicePlaceholder: "Invoice number", invoice: "Invoice",
+    backToList: "Back to orders", items: "Service details", service: "Service", qty: "Quantity",
+    unitPrice: "Unit price", subtotal: "Subtotal", discount: "Discount", payments: "Payment history",
+    method: "Method", amount: "Amount", receivedBy: "Received by", summary: "Payment summary", settled: "Paid",
+    pickupDate: "Pickup date", note: "Note", advanceStatus: "Advance status", reverseStatus: "Reverse status",
+    statusAdvanced: "Order status updated.", statusReversed: "Order status reversed.", receivePayment: "Receive payment",
+    voided: "Order voided", voidedBy: "Voided by",
   },
 };
 

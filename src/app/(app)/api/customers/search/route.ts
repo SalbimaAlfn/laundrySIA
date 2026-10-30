@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { phoneSearchTerm } from "@/lib/phone";
 import { getSession } from "@/server/auth";
 import { db } from "@/server/db";
 
@@ -18,7 +19,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ customers: [] });
   }
 
-  const digits = query.replace(/\D/g, "");
+  const digits = phoneSearchTerm(query);
 
   const customers = await db.customer.findMany({
     where: {

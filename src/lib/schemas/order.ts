@@ -24,7 +24,7 @@ export const orderSchema = z
   .object({
     customerId: idSchema,
     items: z
-      .array(orderItemSchema)
+      .array(orderItemSchema, { error: validation.items })
       .min(1, { error: validation.items })
       .max(MAX_ORDER_ITEMS, { error: validation.items }),
     discount: z
