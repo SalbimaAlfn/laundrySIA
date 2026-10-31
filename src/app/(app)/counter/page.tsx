@@ -1,6 +1,7 @@
-import { PagePlaceholder } from "@/components/app-shell/page-placeholder";
+import { CounterBoard } from "@/components/orders/counter-board";
 import { getDictionary } from "@/lib/i18n";
 import { requireUser } from "@/server/auth";
+import { getCounterOrders } from "@/server/orders/queries";
 import styles from "./counter.module.css";
 
 type CounterPageProps = {
@@ -9,7 +10,7 @@ type CounterPageProps = {
 
 export default async function CounterPage({ searchParams }: CounterPageProps) {
   await requireUser();
-  const params = await searchParams;
+  const [params, orders] = await Promise.all([searchParams, getCounterOrders()]);
   const t = getDictionary();
 
   return (
@@ -19,7 +20,7 @@ export default async function CounterPage({ searchParams }: CounterPageProps) {
           {t.auth.managerOnly}
         </p>
       ) : null}
-      <PagePlaceholder />
+      <CounterBoard orders={orders} />
     </>
   );
 }

@@ -8,6 +8,10 @@ export const paymentSchema = z.object({
   method: paymentMethodSchema,
 });
 
+export const receivePaymentSchema = paymentSchema.extend({
+  idempotencyKey: z.uuid({ error: validation.id }),
+});
+
 /**
  * The remaining balance comes from the order and its payments, so the caller
  * supplies it after locking the row. This keeps the overpayment rule in one

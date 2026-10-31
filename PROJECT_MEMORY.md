@@ -2,7 +2,7 @@
 
 ## Purpose and status
 
-LaundrySIA is a Next.js laundry-management app for an SIA course: cashier workflows are intended to generate balanced accounting entries, with manager reports. The repository history has four phase commits through phase 4. Current code includes the foundations, auth/app shell, accounting engine, customer management, and service management. Most operational screens (orders, payments, counter, expenses, stock, reports, dashboard, audit) are still placeholders or unfinished. `task.md` still leaves T-040 and T-041 unchecked despite their current pages/actions/components being present; confirm acceptance checks before treating those tasks as complete. Next planned work is T-050, order creation.
+LaundrySIA is a Next.js laundry-management app for an SIA course: cashier workflows are intended to generate balanced accounting entries, with manager reports. Current code includes the foundations, auth/app shell, accounting engine, customer/service management, orders, counter board, shared claim ticket printing, payment receipt flow, and receivables list. **T-063 (Completed rule) is now done**: server blocks advance to COMPLETED when balance remains; manager override with required note is audited; UI override dialogs added to OrderDetail and CounterBoard. Expenses, stock, reports, dashboard, and audit UI remain unfinished or placeholders. T-050 through T-063 are checked in `task.md`; latest `npm run check` passed 153 tests across 22 files and the phase build passed.
 
 ## Architecture
 
@@ -29,6 +29,6 @@ LaundrySIA is a Next.js laundry-management app for an SIA course: cashier workfl
 
 ## Current next steps and unknowns
 
-- Implement T-050 order creation with invoice allocation, copied service prices, payment/posting/audit in one transaction, idempotency, and failure-path tests; then follow `task.md` dependencies.
-- Verify whether phase 4 acceptance checks passed and reconcile `task.md` checkboxes/notes when confirmed.
-- No reliable current test/build result was established during this documentation audit. Database availability and the intended deployment target are unknown.
+- T-063 is complete. Next is **T-070 (Expenses)** — manager-only expenses page with void/reverse workflow.
+- `npm run build` has passed; phase 6 is now complete.
+- Verify test DB availability before database-backed checks; deployment target is unknown.

@@ -62,33 +62,33 @@
 }
 
 .statusReceived {
-  background: var(--Received-bg);
-  color: var(--Received);
+  background: var(--received-bg);
+  color: var(--received-fg);
 }
 
 .statusWashing {
-  background: var(--Washing-bg);
-  color: var(--Washing);
+  background: var(--washing-bg);
+  color: var(--washing-fg);
 }
 
 .statusDrying {
-  background: var(--Drying / ironing-bg);
-  color: var(--Drying / ironing);
+  background: var(--drying-bg);
+  color: var(--drying-fg);
 }
 
 .statusReady {
-  background: var(--Ready for pickup-bg);
-  color: var(--Ready for pickup);
+  background: var(--ready-bg);
+  color: var(--ready-fg);
 }
 
 .statusCompleted {
-  background: var(--Paid / completed-bg);
-  color: var(--Paid / completed);
+  background: var(--paid-bg);
+  color: var(--paid-fg);
 }
 
 .statusVoid {
-  background: var(--Void / error-bg);
-  color: var(--Void / error);
+  background: var(--danger-bg);
+  color: var(--danger-fg);
 }
 
 .invoiceLink {

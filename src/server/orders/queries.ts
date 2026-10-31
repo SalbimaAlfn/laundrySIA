@@ -1,4 +1,4 @@
-import { parseBusinessDate } from "@/lib/dates";
+import { businessDate, parseBusinessDate } from "@/lib/dates";
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/server/db";
 
@@ -24,13 +24,34 @@ export type OrderFilters = {
   page?: number;
 };
 
+export type CounterOrder = {
+  id: number;
+  invoiceNo: string;
+  status: Exclude<OrderSummary["status"], "VOID">;
+  customerName: string;
+  total: number;
+  paid: number;
+  balance: number;
+  items: Array<{ serviceName: string; quantity: string; unit: "KG" | "PIECE" }>;
+};
+
+export type ReceivableOrder = {
+  id: number;
+  invoiceNo: string;
+  customerName: string;
+  balance: number;
+  daysOpen: number;
+};
+
 const PAGE_SIZE = 25;
 const ORDER_STATUSES = ["RECEIVED", "WASHING", "DRYING_IRONING", "READY", "COMPLETED"] as const;
 
 function buildWhereClause(filters: OrderFilters): Prisma.OrderWhereInput {
   const where: Prisma.OrderWhereInput = {};
 
-  if (filters.status && ORDER_STATUSES.includes(filters.status as (typeof ORDER_STATUSES)[number])) {
+  if (filters.status === "VOID") {
+    where.voidedAt = { not: null };
+  } else if (filters.status && ORDER_STATUSES.includes(filters.status as (typeof ORDER_STATUSES)[number])) {
     where.status = filters.status as (typeof ORDER_STATUSES)[number];
   }
 
@@ -98,6 +119,7 @@ export async function getOrders(filters: OrderFilters): Promise<{
         id: true,
         invoiceNo: true,
         status: true,
+        voidedAt: true,
         total: true,
         createdAt: true,
         pickupDate: true,
@@ -117,7 +139,7 @@ export async function getOrders(filters: OrderFilters): Promise<{
     return {
       id: order.id,
       invoiceNo: order.invoiceNo,
-      status: order.status,
+      status: order.voidedAt ? ("VOID" as const) : order.status,
       customerName: order.customer.name,
       total: order.total,
       paid,
@@ -133,6 +155,67 @@ export async function getOrders(filters: OrderFilters): Promise<{
     total,
     totalPages: Math.ceil(total / PAGE_SIZE),
   };
+}
+
+export async function getCounterOrders(): Promise<CounterOrder[]> {
+  const orders = await db.order.findMany({
+    where: { voidedAt: null },
+    select: {
+      id: true,
+      invoiceNo: true,
+      status: true,
+      total: true,
+      customer: { select: { name: true } },
+      items: { select: { serviceName: true, quantity: true, unit: true } },
+      payments: { select: { amount: true } },
+    },
+    orderBy: { createdAt: "asc" },
+  });
+
+  return orders.map((order) => {
+    const paid = order.payments.reduce((sum, payment) => sum + payment.amount, 0);
+    return {
+      id: order.id,
+      invoiceNo: order.invoiceNo,
+      status: order.status,
+      customerName: order.customer.name,
+      total: order.total,
+      paid,
+      balance: Math.max(0, order.total - paid),
+      items: order.items.map((item) => ({ ...item, quantity: item.quantity.toString() })),
+    };
+  });
+}
+
+export async function getReceivables(): Promise<{ orders: ReceivableOrder[]; total: number }> {
+  // shortcut: derive balances from loaded payment rows; aggregate in SQL if the order table grows large.
+  const rows = await db.order.findMany({
+    where: { voidedAt: null },
+    select: {
+      id: true,
+      invoiceNo: true,
+      total: true,
+      createdAt: true,
+      customer: { select: { name: true } },
+      payments: { select: { amount: true } },
+    },
+    orderBy: { createdAt: "asc" },
+  });
+  const today = parseBusinessDate(businessDate());
+  const orders = rows.flatMap((order) => {
+    const paid = order.payments.reduce((sum, payment) => sum + payment.amount, 0);
+    const balance = Math.max(0, order.total - paid);
+    if (balance === 0) return [];
+    const orderDay = parseBusinessDate(businessDate(order.createdAt));
+    return [{
+      id: order.id,
+      invoiceNo: order.invoiceNo,
+      customerName: order.customer.name,
+      balance,
+      daysOpen: Math.max(0, Math.floor((today.getTime() - orderDay.getTime()) / 86_400_000)),
+    }];
+  });
+  return { orders, total: orders.reduce((sum, order) => sum + order.balance, 0) };
 }
 
 export async function getOrderDetail(id: number) {

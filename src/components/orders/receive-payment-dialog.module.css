@@ -1,0 +1,26 @@
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.formError {
+  margin: 0;
+  color: var(--danger-fg);
+  font-size: 13px;
+}
+
+.payFull {
+  justify-self: start;
+  margin-top: -12px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .actions > * { flex: 1; }
+}

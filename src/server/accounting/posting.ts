@@ -1,4 +1,4 @@
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma, JournalRefType } from "@/generated/prisma/client";
 import { businessDate, parseBusinessDate } from "@/lib/dates";
 import { JournalError, postEntry } from "./journal";
 
@@ -365,6 +365,36 @@ export async function reverseOrderEntries(
     });
     if (existing) continue;
     const reversal = await (await import("./journal")).reverseEntry(tx, entry.id, createdById);
+    results.push(reversal.entryId);
+  }
+  return results;
+}
+
+export async function reverseEntriesByRef(
+  tx: Prisma.TransactionClient,
+  refType: string,
+  refId: number,
+  createdById: number,
+): Promise<number[]> {
+  const entries = await tx.journalEntry.findMany({
+    where: {
+      refType: refType as JournalRefType,
+      refId,
+      reversesEntryId: null,
+    },
+    orderBy: { id: "asc" },
+  });
+
+  const results: number[] = [];
+  const { reverseEntry } = await import("./journal");
+  for (const entry of entries) {
+    // Check if already has a reversal
+    const existing = await tx.journalEntry.findUnique({
+      where: { reversesEntryId: entry.id },
+      select: { id: true },
+    });
+    if (existing) continue;
+    const reversal = await reverseEntry(tx, entry.id, createdById);
     results.push(reversal.entryId);
   }
   return results;

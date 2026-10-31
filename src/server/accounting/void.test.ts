@@ -6,12 +6,21 @@ import { postOrderEntry, postPaymentEntry, reverseOrderEntries } from "./posting
 config({ path: ".env.test", override: true, quiet: true });
 const { db } = await import("../db");
 
-const marker = "VOID-TEST";
 let userId: number;
 
 async function cleanup(): Promise<void> {
+  const orderIds = [999101, 999102, 999103];
+  const payments = await db.payment.findMany({
+    where: { orderId: { in: orderIds } },
+    select: { id: true },
+  });
   const entries = await db.journalEntry.findMany({
-    where: { description: { contains: marker } },
+    where: {
+      OR: [
+        { refType: "ORDER", refId: { in: orderIds } },
+        { refType: "PAYMENT", refId: { in: payments.map(({ id }) => id) } },
+      ],
+    },
     select: { id: true },
   });
   const ids = entries.map((e) => e.id);
@@ -25,9 +34,9 @@ async function cleanup(): Promise<void> {
     await db.journalEntry.deleteMany({ where: { id: { in: ids } } });
   }
 
-  await db.payment.deleteMany({ where: { orderId: { in: [999101, 999102, 999103] } } });
-  await db.orderItem.deleteMany({ where: { orderId: { in: [999101, 999102, 999103] } } });
-  await db.order.deleteMany({ where: { id: { in: [999101, 999102, 999103] } } });
+  await db.payment.deleteMany({ where: { orderId: { in: orderIds } } });
+  await db.orderItem.deleteMany({ where: { orderId: { in: orderIds } } });
+  await db.order.deleteMany({ where: { id: { in: orderIds } } });
 }
 
 beforeAll(async () => {

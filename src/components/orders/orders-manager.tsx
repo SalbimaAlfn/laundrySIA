@@ -58,6 +58,17 @@ export function OrdersManager({
     router.push("/orders");
   }
 
+  function pageHref(page: number) {
+    const params = new URLSearchParams();
+    if (status && status !== "all") params.set("status", status);
+    if (date) params.set("date", date);
+    if (customer) params.set("customer", customer);
+    if (invoice) params.set("invoice", invoice);
+    if (paymentState && paymentState !== "all") params.set("paymentState", paymentState);
+    params.set("page", String(page));
+    return `/orders?${params.toString()}`;
+  }
+
   const hasFilters =
     status !== "all" || date || customer || invoice || paymentState !== "all";
 
@@ -67,6 +78,7 @@ export function OrdersManager({
     DRYING_IRONING: styles.statusDrying ?? "",
     READY: styles.statusReady ?? "",
     COMPLETED: styles.statusCompleted ?? "",
+    VOID: styles.statusVoid ?? "",
   };
 
   const statusLabels: Record<string, string> = {
@@ -75,6 +87,7 @@ export function OrdersManager({
     DRYING_IRONING: t.orders.statusDrying,
     READY: t.orders.statusReady,
     COMPLETED: t.orders.statusCompleted,
+    VOID: t.orders.statusVoid,
   };
 
   const columns: Array<Column<OrderSummary>> = [
@@ -240,13 +253,13 @@ export function OrdersManager({
           </span>
           <div className={styles.pageButtons}>
             {currentPage > 1 ? (
-              <Link href={`/orders?page=${currentPage - 1}`} className={styles.pageLink}>
+              <Link href={pageHref(currentPage - 1)} className={styles.pageLink}>
                 <ChevronLeft aria-hidden="true" size={16} />
                 {t.orders.previous}
               </Link>
             ) : null}
             {currentPage < totalPages ? (
-              <Link href={`/orders?page=${currentPage + 1}`} className={styles.pageLink}>
+              <Link href={pageHref(currentPage + 1)} className={styles.pageLink}>
                 {t.orders.next}
                 <ChevronRight aria-hidden="true" size={16} />
               </Link>

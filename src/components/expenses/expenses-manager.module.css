@@ -1,0 +1,262 @@
+.page {
+  padding: var(--space-4);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  color: var(--color-espresso);
+}
+
+.caption {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-charcoal);
+  opacity: 0.7;
+}
+
+.balanceCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.balanceCard {
+  background: var(--color-white);
+  border: 1px solid var(--color-oat);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.balanceLabel {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-charcoal);
+  opacity: 0.7;
+  margin-bottom: var(--space-1);
+}
+
+.balanceValue {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-espresso);
+}
+
+.form {
+  background: var(--color-white);
+  border: 1px solid var(--color-oat);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.formTitle {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-md);
+  color: var(--color-espresso);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.field,
+.fieldFull {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.fieldFull {
+  grid-column: 1 / -1;
+}
+
+.field label,
+.fieldFull label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-charcoal);
+}
+
+.field select,
+.field input,
+.fieldFull textarea {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-oat);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  background: var(--color-white);
+  color: var(--color-espresso);
+}
+
+.field select:focus,
+.field input:focus,
+.fieldFull textarea:focus {
+  outline: none;
+  border-color: var(--color-honey);
+  box-shadow: 0 0 0 2px rgba(203, 145, 47, 0.2);
+}
+
+.field select.error,
+.field input.error,
+.fieldFull textarea.error {
+  border-color: var(--color-ember);
+}
+
+.field select.error:focus,
+.field input.error:focus,
+.fieldFull textarea.error:focus {
+  box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.2);
+}
+
+.errorText {
+  font-size: var(--font-size-xs);
+  color: var(--color-ember);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-oat);
+}
+
+.list {
+  background: var(--color-white);
+  border: 1px solid var(--color-oat);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.listTitle {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-md);
+  color: var(--color-espresso);
+  border-bottom: 1px solid var(--color-oat);
+}
+
+.empty {
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--color-charcoal);
+  opacity: 0.6;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--color-oat);
+}
+
+.table th {
+  background: var(--color-cream);
+  font-weight: 600;
+  color: var(--color-espresso);
+  white-space: nowrap;
+}
+
+.table td {
+  color: var(--color-charcoal);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: var(--color-cream);
+}
+
+.right {
+  text-align: right;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.reverseButton {
+  background: none;
+  border: none;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  color: var(--color-charcoal);
+  opacity: 0.6;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reverseButton:hover {
+  background: var(--color-oat);
+  opacity: 1;
+}
+
+.reverseForm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.reverseInput {
+  flex: 1;
+  min-width: 150px;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-oat);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+}
+
+.separatorRow td {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-charcoal);
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.reversedRow {
+  opacity: 0.5;
+}
+
+.reversedRow td {
+  background: var(--color-cream);
+}
+
+.reversedBadge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-ember);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+}

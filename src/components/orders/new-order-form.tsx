@@ -9,11 +9,12 @@ import { CustomerSearch, type CustomerOption } from "@/components/customers/cust
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { MoneyInput } from "@/components/ui/money-input";
 import { getDictionary } from "@/lib/i18n";
-import { addBusinessDays, formatDate } from "@/lib/dates";
+import { addBusinessDays } from "@/lib/dates";
 import { formatQuantity, formatRupiah, lineTotal, sumRupiah, toHundredths } from "@/lib/money";
 import { MAX_MONEY, MAX_ORDER_ITEMS } from "@/lib/limits";
 import { createOrderAction, type CreateOrderState } from "@/server/actions/orders";
 import type { CreatedOrder } from "@/server/orders/create-order";
+import { ClaimTicket, type PrintSize } from "@/components/orders/claim-ticket";
 import styles from "./new-order-form.module.css";
 
 type ServiceOption = {
@@ -41,89 +42,6 @@ type NewOrderFormProps = {
 
 const initialState: CreateOrderState = { status: "idle" };
 
-function Ticket({
-  shopName,
-  shopAddress,
-  invoiceNo,
-  date,
-  customerName,
-  items,
-  subtotal,
-  discount,
-  total,
-  paidNow,
-  leftToPay,
-  placeholder,
-}: {
-  shopName: string;
-  shopAddress: string | null;
-  invoiceNo: string | null;
-  date: string;
-  customerName: string;
-  items: Array<{ name: string; unit: ServiceOption["unit"]; quantity: string; total: number }>;
-  subtotal: number;
-  discount: number;
-  total: number;
-  paidNow: number;
-  leftToPay: number;
-  placeholder: string;
-}) {
-  const t = getDictionary().orderForm;
-
-  return (
-    <article className={styles.ticket} aria-label={t.ticket}>
-      <div className={styles.ticketShop}>{shopName}</div>
-      {shopAddress ? <p className={styles.ticketAddress}>{shopAddress}</p> : null}
-      <p className={styles.invoice}>{invoiceNo ?? placeholder}</p>
-      <p className={styles.ticketDate}>{formatDate(date)}</p>
-      <div className={styles.perforation} aria-hidden="true" />
-      <p className={styles.ticketCustomer}>{customerName}</p>
-      <div className={styles.ticketItems}>
-        {items.length ? (
-          items.map((item, index) => (
-            <div className={styles.ticketItem} key={`${item.name}-${index}`}>
-              <span>
-                {item.name}
-                <small>
-                  {item.quantity} {item.unit === "KG" ? t.kg : t.piece}
-                </small>
-              </span>
-              <strong>{formatRupiah(item.total)}</strong>
-            </div>
-          ))
-        ) : (
-          <p className={styles.ticketEmpty}>{t.chooseService}</p>
-        )}
-      </div>
-      <div className={styles.perforation} aria-hidden="true" />
-      <dl className={styles.ticketTotals}>
-        <div>
-          <dt>{t.subtotal}</dt>
-          <dd>{formatRupiah(subtotal)}</dd>
-        </div>
-        {discount > 0 ? (
-          <div>
-            <dt>{t.discount}</dt>
-            <dd>−{formatRupiah(discount)}</dd>
-          </div>
-        ) : null}
-        <div className={styles.ticketTotal}>
-          <dt>{t.total}</dt>
-          <dd>{formatRupiah(total)}</dd>
-        </div>
-        <div>
-          <dt>{t.paidNow}</dt>
-          <dd>{formatRupiah(paidNow)}</dd>
-        </div>
-        <div className={styles.balanceRow}>
-          <dt>{t.leftToPay}</dt>
-          <dd>{formatRupiah(leftToPay)}</dd>
-        </div>
-      </dl>
-    </article>
-  );
-}
-
 function SavedTicket({
   order,
   customer,
@@ -137,6 +55,7 @@ function SavedTicket({
 }) {
   const t = getDictionary().orderForm;
   const router = useRouter();
+  const [printSize, setPrintSize] = useState<PrintSize>("thermal");
   const paidNow = order.payment?.amount ?? 0;
 
   return (
@@ -145,7 +64,7 @@ function SavedTicket({
         <h1>{t.saved}</h1>
         <p>{order.invoiceNo}</p>
       </div>
-      <Ticket
+      <ClaimTicket
         shopName={shopName}
         shopAddress={shopAddress}
         invoiceNo={order.invoiceNo}
@@ -163,8 +82,17 @@ function SavedTicket({
         paidNow={paidNow}
         leftToPay={order.total - paidNow}
         placeholder={order.invoiceNo}
+        printSize={printSize}
+        animatePaid
       />
       <div className={styles.savedActions}>
+        <label className={styles.printSizeLabel} htmlFor="claim-ticket-size">
+          {t.printSize}
+        </label>
+        <Select id="claim-ticket-size" value={printSize} onChange={(event) => setPrintSize(event.target.value as PrintSize)}>
+          <option value="thermal">{t.thermal}</option>
+          <option value="a5">{t.a5}</option>
+        </Select>
         <Button variant="secondary" onClick={() => window.print()}>
           {t.print}
         </Button>
@@ -576,7 +504,7 @@ export function NewOrderForm({
 
         <aside className={styles.preview}>
           <h2 className={styles.sectionTitle}>{f.ticket}</h2>
-          <Ticket
+          <ClaimTicket
             shopName={shopName}
             shopAddress={shopAddress}
             invoiceNo={null}
@@ -589,6 +517,7 @@ export function NewOrderForm({
             paidNow={paidNow}
             leftToPay={leftToPay}
             placeholder={f.invoicePending}
+            animatePaid={false}
           />
         </aside>
       </form>

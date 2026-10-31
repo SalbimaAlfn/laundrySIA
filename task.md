@@ -202,60 +202,70 @@ A task is done only when its own acceptance checks **and** these pass.
 
 ## H. Phase 5: Orders
 
-- [ ] **T-050 (P1) createOrder server action** (FR-20, FR-21, FR-22, FR-30)
+- [x] **T-050 (P1) createOrder server action** (FR-20, FR-21, FR-22, FR-30)
   - Depends on: T-031, T-040, T-041
   - Do: one transaction that: validates input, allocates the invoice number (increment `invoice_counters` for the WIB business date, retry up to 3 times on unique collision), copies service name, unit, and price into items, computes totals with `lineTotal`, creates the order, creates the first payment if any, posts the journal entry, writes an audit row, and returns the order.
   - Do: accept an idempotency key so a double-click or retry creates only one order.
   - Accept: tests for pay in full, deposit, pay later, full discount, invalid payment, double submit, and a forced failure mid-way that leaves no order, payment, journal, or counter change.
+  - Note: the order creation test forces audit logging to fail after journal posting and verifies the transaction rolls back the order, payment, journal, and invoice counter.
 
-- [ ] **T-051 (P1) New order screen** (`design.md` 7.3)
+- [x] **T-051 (P1) New order screen** (`design.md` 7.3)
   - Depends on: T-050, T-004
   - Do: two-pane layout with the live claim ticket preview. Customer search, item rows with weight stepper (0,5 steps), discount, pickup date (default from turnaround), payment type cards (Pay in full, Deposit, Pay later), method select (default Cash), Save order as the only Honey button.
   - Accept: the preview updates as you type. Server errors appear next to the right field. The button disables while saving. After saving, the ticket is shown with Print and New order.
+  - Note: `NewOrderForm` covers the live preview, field errors, pending state, and saved ticket actions.
 
-- [ ] **T-052 (P1) Order list and detail** (FR-26)
+- [x] **T-052 (P1) Order list and detail** (FR-26)
   - Depends on: T-050
   - Do: `/orders` with filters (status, date, customer, invoice, payment state) and `/orders/[id]` with ticket, progress track, payments list, and actions. Pagination at 25 rows.
   - Accept: payment state shown is derived (never stored). Voided orders show the Void stamp and cannot be edited.
+  - Note: list/detail derive payment totals from payment rows; void filtering and detail stamp use `voidedAt`, and pagination retains active filters.
 
-- [ ] **T-053 (P1) Status changes** (FR-23)
+- [x] **T-053 (P1) Status changes** (FR-23)
   - Depends on: T-052
   - Do: `advanceStatus` (any user, one step forward) and `reverseStatus` (manager, one step back). Reject skips. Reject any change on a void order. Write an audit row.
   - Accept: tests for the allowed and forbidden transitions per role.
+  - Note: reverse requires manager authorization on the server and the detail screen hides the action for cashiers; voided orders reject both transitions.
 
-- [ ] **T-054 (P1) Counter board** (FR-27, `design.md` 7.2)
+- [x] **T-054 (P1) Counter board** (FR-27, `design.md` 7.2)
   - Depends on: T-053
   - Do: board with one column per status, cards with next-step button and a "Left to pay" chip, mobile swipe tabs. Voided orders do not appear.
   - Accept: moving a card updates the board without a full page reload. Columns show counts.
+  - Note: the counter queries all non-void orders, derives payment balances, and revalidates the board after status actions; mobile uses scrollable status tabs.
 
-- [ ] **T-055 (P2) Claim ticket and printing** (FR-24)
+- [x] **T-055 (P2) Claim ticket and printing** (FR-24)
   - Depends on: T-052
   - Do: the `ClaimTicket` component per `design.md` section 10 (Honey strip, perforation notches, Paid stamp, Void stamp). A print stylesheet for 80mm black and white and for A5.
   - Accept: printing from the browser shows only the ticket at the correct width. The Paid stamp animation respects reduced motion.
+  - Note: shared `ClaimTicket` renders preview and detail stamps; print-size selector supports 80 mm thermal and A5 named pages. Paid motion is disabled by `prefers-reduced-motion`.
 
 ---
 
 ## I. Phase 6: Payments and receivables
 
-- [ ] **T-060 (P1) receivePayment server action** (FR-30, FR-31)
+- [x] **T-060 (P1) receivePayment server action** (FR-30, FR-31)
   - Depends on: T-031, T-052
   - Do: one transaction that locks the order row, recomputes the balance, rejects an amount above the balance or a void order, creates the payment, posts the payment entry, writes an audit row. Include an idempotency key.
   - Accept: tests for partial payment, exact payment, overpayment rejected, void order rejected, and two simultaneous payments that together exceed the balance (only one succeeds).
+  - Note: the transaction locks the order row, reads current payments under lock, posts journal/audit atomically, and uses a user-scoped idempotency key.
 
-- [ ] **T-061 (P1) Receive payment UI**
+- [x] **T-061 (P1) Receive payment UI**
   - Depends on: T-060
   - Do: dialog on the order detail and the board card. Amount defaults to the balance, with a Pay in full shortcut. Toast: "Payment saved. Balance is now Rp X." When the balance is zero, the Paid stamp animates in.
   - Accept: keyboard-only use works end to end.
+  - Note: shared native dialog is on the order detail and counter cards; it defaults to the balance, supports full payment, and announces the saved balance.
 
-- [ ] **T-062 (P2) Receivables list** (FR-32)
+- [x] **T-062 (P2) Receivables list** (FR-32)
   - Depends on: T-060
   - Do: list of non-void orders with a balance, sorted by age, with customer, amount, days, and a Receive payment button. Total at the top.
   - Accept: the total equals the Receivables account balance (test it).
+  - Note: the page lists non-void open balances oldest first; integration test checks the list balance against the matching Receivables ledger change.
 
-- [ ] **T-063 (P3) Completed rule** (FR-33)
+- [x] **T-063 (P3) Completed rule** (FR-33)
   - Depends on: T-053, T-060
   - Do: block Completed while a balance remains. Manager override requires a note and is audited.
   - Accept: tests for both paths.
+  - Note: implemented server-side balance check in advanceStatusAction, override dialog for managers in OrderDetail and CounterBoard, audit logging with overrideNote and overrideBalance. 12 tests pass including block, override, and zero-balance paths.
 
 ---
 

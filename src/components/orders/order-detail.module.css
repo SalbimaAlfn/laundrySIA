@@ -41,6 +41,20 @@
   margin: 0;
 }
 
+.voidStamp {
+  display: inline-block;
+  margin: 4px 0 0;
+  padding: 4px 12px;
+  border: 2px solid var(--danger-fg);
+  border-radius: 6px;
+  color: var(--danger-fg);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: rotate(-4deg);
+}
+
 .statusBadge {
   display: inline-flex;
   align-items: center;
@@ -51,33 +65,33 @@
 }
 
 .received {
-  background: var(--Received-bg);
-  color: var(--Received);
+  background: var(--received-bg);
+  color: var(--received-fg);
 }
 
 .washing {
-  background: var(--Washing-bg);
-  color: var(--Washing);
+  background: var(--washing-bg);
+  color: var(--washing-fg);
 }
 
 .drying_ironing {
-  background: var(--Drying / ironing-bg);
-  color: var(--Drying / ironing);
+  background: var(--drying-bg);
+  color: var(--drying-fg);
 }
 
 .ready {
-  background: var(--Ready for pickup-bg);
-  color: var(--Ready for pickup);
+  background: var(--ready-bg);
+  color: var(--ready-fg);
 }
 
 .completed {
-  background: var(--Paid / completed-bg);
-  color: var(--Paid / completed);
+  background: var(--paid-bg);
+  color: var(--paid-fg);
 }
 
 .void {
-  background: var(--Void / error-bg);
-  color: var(--Void / error);
+  background: var(--danger-bg);
+  color: var(--danger-fg);
 }
 
 /* Progress Track */
@@ -162,6 +176,20 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+.ticketPanel {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+}
+
+.printActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--bark);
+  font-size: 13px;
 }
 
 .sidebar {
@@ -283,7 +311,7 @@
 }
 
 .paidLabel {
-  color: var(--Paid / completed);
+  color: var(--paid-fg);
 }
 
 /* Pickup Date */
@@ -320,11 +348,11 @@
 
 /* Void Info */
 .voidInfo {
-  background: var(--Void / error-bg);
-  border: 1px solid var(--Void / error);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-fg);
   border-radius: 12px;
   padding: 16px;
-  color: var(--Void / error);
+  color: var(--danger-fg);
 }
 
 .voidLabel {

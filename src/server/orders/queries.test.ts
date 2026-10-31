@@ -4,7 +4,7 @@ const mocks = vi.hoisted(() => ({ findMany: vi.fn(), count: vi.fn() }));
 
 vi.mock("@/server/db", () => ({ db: { order: mocks } }));
 
-import { getOrders } from "./queries";
+import { getCounterOrders, getOrders, getReceivables } from "./queries";
 
 describe("getOrders", () => {
   beforeEach(() => {
@@ -41,5 +41,71 @@ describe("getOrders", () => {
     await getOrders({ paymentState: "paid" });
 
     expect(mocks.findMany.mock.calls[1]?.[0]).toMatchObject({ where: { id: { in: [7] } } });
+  });
+
+  it("filters void orders", async () => {
+    await getOrders({ status: "VOID" });
+
+    expect(mocks.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { voidedAt: { not: null } } }),
+    );
+  });
+
+  it("loads non-void counter cards with derived balances", async () => {
+    mocks.findMany.mockResolvedValueOnce([
+      {
+        id: 1,
+        invoiceNo: "INV-1",
+        status: "READY",
+        total: 40_000,
+        customer: { name: "Rina" },
+        items: [{ serviceName: "Wash", quantity: { toString: () => "5.00" }, unit: "KG" }],
+        payments: [{ amount: 15_000 }],
+      },
+    ]);
+
+    await expect(getCounterOrders()).resolves.toEqual([
+      {
+        id: 1,
+        invoiceNo: "INV-1",
+        status: "READY",
+        customerName: "Rina",
+        total: 40_000,
+        paid: 15_000,
+        balance: 25_000,
+        items: [{ serviceName: "Wash", quantity: "5.00", unit: "KG" }],
+      },
+    ]);
+    expect(mocks.findMany.mock.calls[0]?.[0]).toMatchObject({ where: { voidedAt: null } });
+  });
+
+  it("lists only open balances and totals them", async () => {
+    mocks.findMany.mockResolvedValueOnce([
+      {
+        id: 1,
+        invoiceNo: "INV-1",
+        total: 40_000,
+        createdAt: new Date(),
+        customer: { name: "Rina" },
+        payments: [{ amount: 15_000 }],
+      },
+      {
+        id: 2,
+        invoiceNo: "INV-2",
+        total: 20_000,
+        createdAt: new Date(),
+        customer: { name: "Budi" },
+        payments: [{ amount: 20_000 }],
+      },
+    ]);
+
+    await expect(getReceivables()).resolves.toMatchObject({
+      orders: [{ id: 1, invoiceNo: "INV-1", customerName: "Rina", balance: 25_000, daysOpen: 0 }],
+      total: 25_000,
+    });
+    expect(mocks.findMany.mock.calls[0]?.[0]).toMatchObject({
+      where: { voidedAt: null },
+      orderBy: { createdAt: "asc" },
+    });
   });
 });

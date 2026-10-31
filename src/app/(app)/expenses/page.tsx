@@ -1,7 +1,20 @@
-import { PagePlaceholder } from "@/components/app-shell/page-placeholder";
 import { requireRole } from "@/server/auth";
+import { getExpenses, getExpenseBalance } from "@/server/actions/expenses";
+import { ExpensesManager } from "@/components/expenses/expenses-manager";
 
 export default async function ExpensesPage() {
   await requireRole("MANAGER");
-  return <PagePlaceholder />;
+  
+  const [expenses, balances] = await Promise.all([
+    getExpenses(),
+    getExpenseBalance(),
+  ]);
+
+  return (
+    <ExpensesManager
+      expenses={expenses}
+      cashBalance={balances.cashBalance}
+      bankBalance={balances.bankBalance}
+    />
+  );
 }

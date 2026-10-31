@@ -1,10 +1,11 @@
 import { config } from "dotenv";
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { businessDate, addBusinessDays, parseBusinessDate } from "@/lib/dates";
 import type { OrderInput } from "@/lib/schemas/order";
 
 config({ path: ".env.test", override: true, quiet: true });
 const { createOrder } = await import("./create-order");
+const audit = await import("@/server/audit");
 const { db } = await import("@/server/db");
 
 const marker = "order-action-test";
@@ -198,6 +199,24 @@ describe("createOrder", () => {
     expect(
       await db.invoiceCounter.findUnique({ where: { date: parseBusinessDate(businessDate()) } }),
     ).toEqual(before);
+  });
+
+  it("rolls back the order, payment, journal, and invoice counter when auditing fails", async () => {
+    const date = parseBusinessDate(businessDate());
+    const counterBefore = await db.invoiceCounter.findUnique({ where: { date } });
+    const writeAudit = vi.spyOn(audit, "writeAudit").mockRejectedValueOnce(new Error("forced audit failure"));
+
+    try {
+      await expect(createOrder(orderInput(), userId, key())).rejects.toThrow("forced audit failure");
+
+      expect(await db.order.count({ where: { note: marker } })).toBe(0);
+      expect(await db.payment.count({ where: { order: { note: marker } } })).toBe(0);
+      expect(await db.journalEntry.count({ where: { refType: "ORDER", createdById: userId } })).toBe(0);
+      expect(await db.invoiceCounter.findUnique({ where: { date } })).toEqual(counterBefore);
+    } finally {
+      writeAudit.mockRestore();
+      await cleanup();
+    }
   });
 
   it("returns the same order for a repeated submission key", async () => {

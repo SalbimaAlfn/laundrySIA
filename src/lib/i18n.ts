@@ -31,6 +31,7 @@ export type ValidationMessages = {
   depositMustBeLess: string;
   laterPayment: string;
   paymentTooMuch: string;
+  paymentVoided: string;
   serviceName: string;
   unit: string;
   price: string;
@@ -201,6 +202,10 @@ export type OrderFormMessages = {
   invoicePending: string;
   newOrder: string;
   print: string;
+  printSize: string;
+  thermal: string;
+  a5: string;
+  paidStamp: string;
   shopNameFallback: string;
   noServices: string;
 };
@@ -222,6 +227,53 @@ export type OrderMessages = {
   payments: string; method: string; amount: string; receivedBy: string; summary: string;
   settled: string; pickupDate: string; note: string; advanceStatus: string; reverseStatus: string;
   statusAdvanced: string; statusReversed: string; receivePayment: string; voided: string; voidedBy: string;
+  paymentSaved: string;
+  // Override messages
+  balanceRemainsError: string;
+  managerRequiredError: string;
+  overrideTitle: string;
+  overrideMessage: string;
+  overrideMessage2: string;
+  overrideNoteLabel: string;
+  overrideNotePlaceholder: string;
+  overrideNoteRequired: string;
+  overrideConfirm: string;
+};
+
+export type CounterBoardMessages = {
+  activeOrders: string;
+  readyOrders: string;
+  leftToPay: string;
+  emptyColumn: string;
+};
+
+export type ReceivablesMessages = {
+  totalOwed: string;
+  days: string;
+  empty: string;
+};
+
+export type ExpenseMessages = {
+  title: string;
+  lead: string;
+  add: string;
+  addTitle: string;
+  category: string;
+  amount: string;
+  paidFrom: string;
+  date: string;
+  note: string;
+  notePlaceholder: string;
+  savedCreate: string;
+  empty: string;
+  listTitle: string;
+  createdBy: string;
+  reversedTitle: string;
+  reversed: string;
+  reverse: string;
+  reverseReasonPlaceholder: string;
+  reverseReasonRequired: string;
+  saved: string;
 };
 
 export type Dictionary = {
@@ -234,6 +286,9 @@ export type Dictionary = {
   services: ServiceMessages;
   orderForm: OrderFormMessages;
   orders: OrderMessages;
+  counterBoard: CounterBoardMessages;
+  receivables: ReceivablesMessages;
+  expenses: ExpenseMessages;
 };
 
 const id: Dictionary = {
@@ -264,6 +319,7 @@ const id: Dictionary = {
     depositMustBeLess: "Uang muka harus lebih kecil dari total.",
     laterPayment: "Pembayaran belakangan tidak boleh menyertakan jumlah.",
     paymentTooMuch: "Jumlah pembayaran melebihi sisa tagihan.",
+    paymentVoided: "Pesanan dibatalkan dan tidak dapat menerima pembayaran.",
     serviceName: "Nama layanan harus 2 sampai 80 karakter.",
     unit: "Satuan tidak valid.",
     price: "Harga harus lebih dari 0.",
@@ -432,6 +488,10 @@ const id: Dictionary = {
     invoicePending: "Nomor dibuat saat disimpan",
     newOrder: "Pesanan baru",
     print: "Cetak tiket",
+    printSize: "Ukuran cetak",
+    thermal: "Thermal 80 mm",
+    a5: "Invoice A5",
+    paidStamp: "Lunas",
     shopNameFallback: "Laundry",
     noServices: "Belum ada layanan aktif. Minta manajer menambahkan layanan.",
   },
@@ -451,6 +511,50 @@ const id: Dictionary = {
     reverseStatus: "Kembalikan status", statusAdvanced: "Status pesanan diperbarui.",
     statusReversed: "Status pesanan dikembalikan.", receivePayment: "Terima pembayaran", voided: "Pesanan dibatalkan",
     voidedBy: "Dibatalkan oleh",
+    paymentSaved: "Pembayaran tersimpan. Sisa tagihan sekarang",
+    // Override messages
+    balanceRemainsError: "Pesanan ini masih memiliki sisa tagihan. Hanya manajer yang dapat memaksa status Selesai.",
+    managerRequiredError: "Hanya manajer yang dapat mengoverride saldo tersisa.",
+    overrideTitle: "Override Selesai",
+    overrideMessage: "Pesanan ini masih memiliki sisa tagihan",
+    overrideMessage2: "Hanya manajer yang dapat memaksa status Selesai dengan catatan.",
+    overrideNoteLabel: "Catatan override (wajib)",
+    overrideNotePlaceholder: "Masukkan alasan memaksa selesai...",
+    overrideNoteRequired: "Catatan override wajib diisi.",
+    overrideConfirm: "Konfirmasi override",
+  },
+  counterBoard: {
+    activeOrders: "Pesanan berjalan",
+    readyOrders: "Siap diambil",
+    leftToPay: "Sisa pembayaran",
+    emptyColumn: "Belum ada pesanan di status ini.",
+  },
+  receivables: {
+    totalOwed: "Total piutang",
+    days: "hari",
+    empty: "Tidak ada pesanan dengan sisa pembayaran.",
+  },
+  expenses: {
+    title: "Pengeluaran",
+    lead: "Kelola pengeluaran operasional.",
+    add: "Tambah pengeluaran",
+    addTitle: "Pengeluaran baru",
+    category: "Kategori",
+    amount: "Jumlah",
+    paidFrom: "Dibayar dari",
+    date: "Tanggal",
+    note: "Catatan",
+    notePlaceholder: "Catatan opsional...",
+    savedCreate: "Pengeluaran ditambahkan.",
+    empty: "Belum ada pengeluaran.",
+    listTitle: "Daftar pengeluaran",
+    createdBy: "Dibuat oleh",
+    reversedTitle: "Dibatalkan",
+    reversed: "Dibatalkan",
+    reverse: "Batalkan",
+    reverseReasonPlaceholder: "Alasan pembatalan...",
+    reverseReasonRequired: "Alasan pembatalan wajib diisi (5-200 karakter).",
+    saved: "Pengeluaran disimpan.",
   },
 };
 
@@ -482,6 +586,7 @@ const en: Dictionary = {
     depositMustBeLess: "Deposit must be less than the total.",
     laterPayment: "Pay later cannot include an amount.",
     paymentTooMuch: "Payment exceeds the remaining balance.",
+    paymentVoided: "Voided orders cannot receive payments.",
     serviceName: "Service name must be 2 to 80 characters.",
     unit: "Invalid unit.",
     price: "Price must be greater than 0.",
@@ -650,6 +755,10 @@ const en: Dictionary = {
     invoicePending: "Number assigned when saved",
     newOrder: "New order",
     print: "Print ticket",
+    printSize: "Print size",
+    thermal: "80 mm thermal",
+    a5: "A5 invoice",
+    paidStamp: "Paid",
     shopNameFallback: "Laundry",
     noServices: "No active services. Ask a manager to add a service.",
   },
@@ -667,6 +776,50 @@ const en: Dictionary = {
     pickupDate: "Pickup date", note: "Note", advanceStatus: "Advance status", reverseStatus: "Reverse status",
     statusAdvanced: "Order status updated.", statusReversed: "Order status reversed.", receivePayment: "Receive payment",
     voided: "Order voided", voidedBy: "Voided by",
+    paymentSaved: "Payment saved. Balance is now",
+    // Override messages
+    balanceRemainsError: "This order still has a remaining balance. Only a manager can force Completed status.",
+    managerRequiredError: "Only a manager can override the remaining balance.",
+    overrideTitle: "Override Completed",
+    overrideMessage: "This order still has a remaining balance of",
+    overrideMessage2: "Only a manager can force Completed status with a note.",
+    overrideNoteLabel: "Override note (required)",
+    overrideNotePlaceholder: "Enter reason for forcing completion...",
+    overrideNoteRequired: "Override note is required.",
+    overrideConfirm: "Confirm override",
+  },
+  counterBoard: {
+    activeOrders: "Active orders",
+    readyOrders: "Ready for pickup",
+    leftToPay: "Left to pay",
+    emptyColumn: "No orders in this status.",
+  },
+  receivables: {
+    totalOwed: "Total receivables",
+    days: "days",
+    empty: "No orders have an outstanding balance.",
+  },
+  expenses: {
+    title: "Expenses",
+    lead: "Manage operational expenses.",
+    add: "Add expense",
+    addTitle: "New expense",
+    category: "Category",
+    amount: "Amount",
+    paidFrom: "Paid from",
+    date: "Date",
+    note: "Note",
+    notePlaceholder: "Optional note...",
+    savedCreate: "Expense added.",
+    empty: "No expenses yet.",
+    listTitle: "Expense list",
+    createdBy: "Created by",
+    reversedTitle: "Reversed",
+    reversed: "Reversed",
+    reverse: "Reverse",
+    reverseReasonPlaceholder: "Reverse reason...",
+    reverseReasonRequired: "Reverse reason is required (5-200 characters).",
+    saved: "Expense saved.",
   },
 };
 
