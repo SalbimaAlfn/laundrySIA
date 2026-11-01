@@ -271,10 +271,11 @@ A task is done only when its own acceptance checks **and** these pass.
 
 ## J. Phase 7: Expenses and stock (manager)
 
-- [ ] **T-070 (P1) Expenses** (FR-40, FR-72)
+- [x] **T-070 (P1) Expenses** (FR-40, FR-72)
   - Depends on: T-032, T-022
   - Do: expenses page (list left, form right). Server action posts the entry and writes an audit row. No edit or delete: a mistake is fixed by voiding with a reversing entry (add a Reverse button that requires a reason).
   - Accept: cashier is blocked. Toast shows the new cash balance. The reversal restores balances.
+  - Note: backend (`expenses.ts`) and UI (`expenses-manager.tsx`) complete. Tests pass. Lint fixed.
 
 - [ ] **T-071 (P1) Supply purchases** (FR-41)
   - Depends on: T-032

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, RotateCcw, Trash2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,11 +28,10 @@ interface ExpensesManagerProps {
   bankBalance: number;
 }
 
-export function ExpensesManager({ expenses: initialExpenses, cashBalance, bankBalance }: ExpensesManagerProps) {
+export function ExpensesManager({ expenses, cashBalance, bankBalance }: ExpensesManagerProps) {
   const t = getDictionary();
   const { show } = useToast();
   const router = useRouter();
-  const [expenses, setExpenses] = useState(initialExpenses);
   const [showForm, setShowForm] = useState(false);
   const [pending, startTransition] = useTransition();
   const [reverseId, setReverseId] = useState<number | null>(null);
@@ -45,13 +44,6 @@ export function ExpensesManager({ expenses: initialExpenses, cashBalance, bankBa
     note: "",
   });
   const [formError, setFormError] = useState<Record<string, string>>({});
-
-  // Sync expenses when router.refresh() updates the page
-  const initialExpensesJson = JSON.stringify(initialExpenses);
-  useEffect(() => {
-    setExpenses(initialExpenses);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-  }, [initialExpensesJson]);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;

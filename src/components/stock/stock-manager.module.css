@@ -1,0 +1,231 @@
+.page {
+  padding: 24px 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  font-family: var(--font-bricolage);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--espresso);
+  margin: 0 0 4px 0;
+}
+
+.caption {
+  font-size: 14px;
+  color: var(--bark);
+  margin: 0;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.lowStockAlert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #FDEBD0;
+  border: 1px solid var(--ember);
+  border-radius: 8px;
+  color: #9A5200;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.form {
+  background: var(--paper);
+  border: 1px solid var(--sand-strong);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.formTitle {
+  font-family: var(--font-bricolage);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--espresso);
+  margin: 0 0 16px 0;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--espresso);
+}
+
+.field input,
+.field select,
+.field textarea {
+  height: 48px;
+  padding: 0 12px;
+  border: 1.5px solid var(--sand-strong);
+  border-radius: 8px;
+  font-family: var(--font-figtree);
+  font-size: 16px;
+  color: var(--espresso);
+  background: var(--paper);
+  transition: border-color 0.12s;
+}
+
+.field textarea {
+  height: auto;
+  padding: 12px;
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--honey);
+}
+
+.field .error {
+  border-color: var(--danger);
+}
+
+.errorText {
+  font-size: 13px;
+  color: var(--danger);
+}
+
+.fieldFull {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.fieldFull span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--espresso);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--sand);
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-family: var(--font-figtree);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--espresso);
+  margin: 0 0 12px 0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--paper);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--sand);
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--sand);
+}
+
+.table th {
+  background: var(--cream-soft);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--espresso);
+}
+
+.table td {
+  font-size: 14px;
+  color: var(--espresso);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover {
+  background: var(--cream-soft);
+}
+
+.right {
+  text-align: right !important;
+}
+
+.empty {
+  font-size: 14px;
+  color: var(--bark);
+  padding: 24px;
+  text-align: center;
+  background: var(--paper);
+  border: 1px solid var(--sand);
+  border-radius: 12px;
+}
+
+.lowStock {
+  background: #FDEBD0 !important;
+}
+
+.lowStockBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: #FDEBD0;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #9A5200;
+}
+
+.inBadge {
+  display: inline-flex;
+  padding: 2px 8px;
+  background: #E5F2E6;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #2F6B3A;
+}
+
+.outBadge {
+  display: inline-flex;
+  padding: 2px 8px;
+  background: #FBE7E4;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #A12B2B;
+}
