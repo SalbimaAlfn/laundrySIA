@@ -215,20 +215,6 @@ export async function postPurchaseEntry(
     },
   });
 
-  await tx.supplyMovement.create({
-    data: {
-      supplyId: purchase.supplyId,
-      type: "IN",
-      quantity: purchase.quantity,
-      totalCost: purchase.totalCost,
-      date:
-        typeof purchase.date === "string"
-          ? new Date(`${purchase.date}T00:00:00+07:00`)
-          : purchase.date,
-      createdById,
-    },
-  });
-
   return postEntry(tx, {
     date: purchase.date,
     description: `Supply purchase ${purchase.id}`,

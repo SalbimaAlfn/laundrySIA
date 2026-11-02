@@ -269,10 +269,12 @@ export type ExpenseMessages = {
   savedUpdate: string;
   reverse: string;
   reverseReasonRequired: string;
+  reverseReasonPlaceholder: string;
   reversed: string;
   reversedTitle: string;
   listTitle: string;
   createTitle: string;
+  createdBy: string;
   paidFromOptions: { cash: string; bank: string };
   categoryOptions: { electricityWater: string; wages: string; rent: string; other: string };
 };
@@ -308,15 +310,6 @@ export type StockMessages = {
   supplySaved: string;
   createdBy: string;
 };
-  listTitle: string;
-  createdBy: string;
-  reversedTitle: string;
-  reversed: string;
-  reverse: string;
-  reverseReasonPlaceholder: string;
-  reverseReasonRequired: string;
-  saved: string;
-};
 
 export type Dictionary = {
   validation: ValidationMessages;
@@ -331,6 +324,7 @@ export type Dictionary = {
   counterBoard: CounterBoardMessages;
   receivables: ReceivablesMessages;
   expenses: ExpenseMessages;
+  stock: StockMessages;
 };
 
 const id: Dictionary = {
