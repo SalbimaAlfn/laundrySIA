@@ -309,6 +309,7 @@ export type StockMessages = {
   purchaseSaved: string;
   supplySaved: string;
   createdBy: string;
+  type: string;
 };
 
 export type Dictionary = {
