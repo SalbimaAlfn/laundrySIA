@@ -2,11 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { supplyPurchaseSchema } from "@/lib/schemas";
+import { supplyCreateSchema, supplyPurchaseSchema, supplyUsageSchema } from "@/lib/schemas";
 import { writeAudit } from "@/server/audit";
 import { requireRole } from "@/server/auth";
 import { db } from "@/server/db";
-import { postPurchaseEntry } from "@/server/accounting/posting";
+import { postPurchaseEntry, postUsageEntry } from "@/server/accounting/posting";
 
 export type SupplyRecord = {
   id: number;
@@ -35,6 +35,8 @@ export type PurchaseFormState = {
   errors?: Record<string, string>;
   movement?: SupplyMovementRecord;
 };
+
+export type UsageFormState = PurchaseFormState;
 
 function fieldErrorsOf(error: z.ZodError): Record<string, string> {
   const errors: Record<string, string> = {};
@@ -158,6 +160,84 @@ export async function createSupplyPurchaseAction(
   }
 }
 
+export async function createSupplyUsageAction(
+  _previousState: UsageFormState,
+  formData: FormData,
+): Promise<UsageFormState> {
+  const session = await requireRole("MANAGER");
+  const parsed = supplyUsageSchema.safeParse({
+    supplyId: Number(formData.get("supplyId")),
+    quantityHundredths: Number(formData.get("quantity")),
+    date: formData.get("date"),
+    note: formData.get("note") || undefined,
+  });
+
+  if (!parsed.success) {
+    return { status: "invalid", errors: fieldErrorsOf(parsed.error) };
+  }
+
+  const quantity = parsed.data.quantityHundredths / 100;
+
+  try {
+    const movement = await db.$transaction(async (tx) => {
+      const supply = await tx.supply.findUnique({
+        where: { id: parsed.data.supplyId },
+        select: { name: true },
+      });
+      if (!supply) throw new Error("Supply not found");
+
+      const posted = await postUsageEntry(
+        tx,
+        {
+          id: 0,
+          supplyId: parsed.data.supplyId,
+          quantity,
+          date: parsed.data.date,
+        },
+        session.id,
+      );
+
+      await writeAudit(tx, {
+        userId: session.id,
+        action: "SUPPLY_USAGE",
+        entityType: "SupplyMovement",
+        entityId: posted.movementId,
+        detail: {
+          supplyName: supply.name,
+          quantity,
+          totalCost: posted.totalCost,
+          note: parsed.data.note,
+        },
+      });
+
+      return {
+        id: posted.movementId,
+        supplyId: parsed.data.supplyId,
+        supplyName: supply.name,
+        quantity,
+        totalCost: posted.totalCost,
+        date: parsed.data.date,
+        note: parsed.data.note ?? null,
+      };
+    });
+
+    revalidatePath("/stock");
+    revalidatePath("/dashboard");
+    return {
+      status: "success",
+      movement: {
+        ...movement,
+        type: "OUT",
+        createdById: session.id,
+        createdBy: session.name,
+      },
+    };
+  } catch (error) {
+    console.error("Failed to create supply usage", error);
+    return { status: "error" };
+  }
+}
+
 export async function getSupplies(): Promise<SupplyRecord[]> {
   const supplies = await db.supply.findMany({
     orderBy: { name: "asc" },
@@ -202,29 +282,28 @@ export async function createSupplyAction(
 ): Promise<{ status: "success" | "invalid" | "error"; errors?: Record<string, string> }> {
   const session = await requireRole("MANAGER");
 
-  const name = formData.get("name")?.toString().trim();
-  const unit = formData.get("unit")?.toString().trim();
-  const minQty = Number(formData.get("minQty")) || 0;
-
-  if (!name || name.length < 2 || name.length > 80) {
-    return { status: "invalid", errors: { name: "Name must be 2-80 characters" } };
-  }
-  if (!unit || unit.length < 1 || unit.length > 20) {
-    return { status: "invalid", errors: { unit: "Unit is required" } };
+  const parsed = supplyCreateSchema.safeParse({
+    name: formData.get("name"),
+    unit: formData.get("unit"),
+    minQty: Number(formData.get("minQty")) || 0,
+  });
+  if (!parsed.success) {
+    return { status: "invalid", errors: fieldErrorsOf(parsed.error) };
   }
 
   try {
     await db.$transaction(async (tx) => {
-      await tx.supply.create({
-        data: { name, unit, minQty, stockQty: 0, avgUnitCost: 0 },
+      const created = await tx.supply.create({
+        data: { ...parsed.data, stockQty: 0, avgUnitCost: 0 },
+        select: { id: true },
       });
 
       await writeAudit(tx, {
         userId: session.id,
         action: "SUPPLY_CREATE",
         entityType: "Supply",
-        entityId: 0,
-        detail: { name, unit, minQty },
+        entityId: created.id,
+        detail: parsed.data,
       });
     });
 

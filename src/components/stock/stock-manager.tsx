@@ -2,12 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Package, AlertTriangle } from "lucide-react";
+import { Plus, Package, AlertTriangle, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { formatRupiah } from "@/lib/money";
 import { getDictionary } from "@/lib/i18n";
-import { createSupplyPurchaseAction, createSupplyAction, getSupplies, getSupplyMovements, type SupplyRecord, type SupplyMovementRecord } from "@/server/actions/supply";
+import { createSupplyAction, createSupplyPurchaseAction, createSupplyUsageAction, type SupplyRecord, type SupplyMovementRecord } from "@/server/actions/supply";
 import styles from "./stock-manager.module.css";
 
 const paidFromOptions = [
@@ -24,10 +24,11 @@ export function StockManager({ supplies: initialSupplies, movements: initialMove
   const t = getDictionary();
   const { show } = useToast();
   const router = useRouter();
-  const [supplies, setSupplies] = useState(initialSupplies);
-  const [movements, setMovements] = useState(initialMovements);
+  const supplies = initialSupplies;
+  const movements = initialMovements;
   const [showPurchaseForm, setShowPurchaseForm] = useState(false);
   const [showSupplyForm, setShowSupplyForm] = useState(false);
+  const [showUsageForm, setShowUsageForm] = useState(false);
   const [pending, startTransition] = useTransition();
 
   const [purchaseForm, setPurchaseForm] = useState({
@@ -46,6 +47,14 @@ export function StockManager({ supplies: initialSupplies, movements: initialMove
     minQty: "",
   });
   const [supplyError, setSupplyError] = useState<Record<string, string>>({});
+
+  const [usageForm, setUsageForm] = useState({
+    supplyId: "",
+    quantity: "",
+    date: new Date().toISOString().slice(0, 10),
+    note: "",
+  });
+  const [usageError, setUsageError] = useState<Record<string, string>>({});
 
   function handlePurchaseInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
@@ -69,7 +78,7 @@ export function StockManager({ supplies: initialSupplies, movements: initialMove
 
     const form = new FormData();
     form.append("supplyId", purchaseForm.supplyId);
-    form.append("quantity", purchaseForm.quantity);
+    form.append("quantity", String(Math.round(Number(purchaseForm.quantity) * 100)));
     form.append("totalCost", purchaseForm.totalCost);
     form.append("paidFrom", purchaseForm.paidFrom);
     form.append("date", purchaseForm.date);
@@ -121,6 +130,36 @@ export function StockManager({ supplies: initialSupplies, movements: initialMove
     });
   }
 
+  function handleUsageInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
+    const { name, value } = e.target;
+    setUsageForm(prev => ({ ...prev, [name]: value }));
+    if (usageError[name]) setUsageError(prev => ({ ...prev, [name]: "" }));
+  }
+
+  async function handleUsageSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setUsageError({});
+    const form = new FormData();
+    form.append("supplyId", usageForm.supplyId);
+    form.append("quantity", String(Math.round(Number(usageForm.quantity) * 100)));
+    form.append("date", usageForm.date);
+    if (usageForm.note) form.append("note", usageForm.note);
+
+    startTransition(async () => {
+      const result = await createSupplyUsageAction({ status: "idle" }, form);
+      if (result.status === "success") {
+        show(t.stock?.usageSaved);
+        setShowUsageForm(false);
+        setUsageForm({ supplyId: "", quantity: "", date: new Date().toISOString().slice(0, 10), note: "" });
+        router.refresh();
+      } else if (result.status === "invalid" && result.errors) {
+        setUsageError(result.errors);
+      } else {
+        show(t.common.genericError);
+      }
+    });
+  }
+
   const lowStockSupplies = supplies.filter(s => s.stockQty <= s.minQty);
 
   return (
@@ -136,6 +175,9 @@ export function StockManager({ supplies: initialSupplies, movements: initialMove
           </Button>
           <Button onClick={() => setShowPurchaseForm(!showPurchaseForm)} disabled={showPurchaseForm}>
             <Plus aria-hidden="true" size={16} /> {t.stock?.addPurchase || "Catat pembelian"}
+          </Button>
+          <Button variant="secondary" onClick={() => setShowUsageForm(!showUsageForm)} disabled={showUsageForm}>
+            <Minus aria-hidden="true" size={16} /> {t.stock?.addUsage}
           </Button>
         </div>
       </header>
@@ -287,6 +329,65 @@ export function StockManager({ supplies: initialSupplies, movements: initialMove
             <Button type="submit" loading={pending}>
               {t.common.save}
             </Button>
+          </div>
+        </form>
+      )}
+
+      {/* Usage Form */}
+      {showUsageForm && (
+        <form onSubmit={handleUsageSubmit} className={styles.form}>
+          <h2 className={styles.formTitle}>{t.stock?.newUsage}</h2>
+          <div className={styles.formGrid}>
+            <label className={styles.field}>
+              <span>{t.stock?.supply} *</span>
+              <select
+                name="supplyId"
+                value={usageForm.supplyId}
+                onChange={handleUsageInputChange}
+                className={usageError.supplyId ? styles.error : ""}
+              >
+                <option value="">-- {t.stock?.selectSupply} --</option>
+                {supplies.map(s => (
+                  <option key={s.id} value={s.id}>{s.name} ({s.stockQty.toFixed(2)} {s.unit})</option>
+                ))}
+              </select>
+              {usageError.supplyId && <span className={styles.errorText}>{usageError.supplyId}</span>}
+            </label>
+            <label className={styles.field}>
+              <span>{t.stock?.quantity} *</span>
+              <input
+                type="number"
+                name="quantity"
+                value={usageForm.quantity}
+                onChange={handleUsageInputChange}
+                placeholder="0"
+                min="0.01"
+                step="0.01"
+                className={usageError.quantity ? styles.error : ""}
+              />
+              {usageError.quantity && <span className={styles.errorText}>{usageError.quantity}</span>}
+            </label>
+            <label className={styles.field}>
+              <span>{t.stock?.date} *</span>
+              <input
+                type="date"
+                name="date"
+                value={usageForm.date}
+                onChange={handleUsageInputChange}
+                className={usageError.date ? styles.error : ""}
+              />
+              {usageError.date && <span className={styles.errorText}>{usageError.date}</span>}
+            </label>
+          </div>
+          <label className={styles.fieldFull}>
+            <span>{t.stock?.note}</span>
+            <textarea name="note" value={usageForm.note} onChange={handleUsageInputChange} rows={2} maxLength={200} />
+          </label>
+          <div className={styles.formActions}>
+            <Button type="button" variant="secondary" onClick={() => setShowUsageForm(false)} disabled={pending}>
+              {t.common.cancel}
+            </Button>
+            <Button type="submit" loading={pending}>{t.common.save}</Button>
           </div>
         </form>
       )}

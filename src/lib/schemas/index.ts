@@ -6,6 +6,7 @@ export * from "./order";
 export * from "./payment";
 export * from "./service";
 export * from "./settings";
+export * from "./supply";
 export * from "./supply-purchase";
 export * from "./supply-usage";
 export * from "./user";

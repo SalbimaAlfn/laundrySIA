@@ -237,13 +237,10 @@ export async function postUsageEntry(
     date: Date | string;
   },
   createdById: number,
-): Promise<{ entryId: number }> {
-  if (usage.quantity <= 0 || (!Number.isInteger(usage.quantity * 100) && false)) {
-    // quantity can be decimal in reality, but easier to pass as hundredths? Or just number
+): Promise<{ entryId: number; movementId: number; totalCost: number }> {
+  if (usage.quantity <= 0) {
+    throw new JournalError("JOURNAL_NOT_INTEGER", "Usage quantity must be greater than zero");
   }
-  // Accept number as decimal value (e.g., 1.5 kg) - but we need to be careful about precision
-  // PRD says quantities use Decimal(8,2); tests might pass hundredths as ints? Let us be flexible
-  const qty = usage.quantity;
 
   const supply = await tx.supply.findUnique({
     where: { id: usage.supplyId },
@@ -252,43 +249,45 @@ export async function postUsageEntry(
     throw new JournalError("JOURNAL_ACCOUNT_NOT_FOUND", "Supply not found");
   }
 
-  // Usage cost is round(usedQty x avgUnitCost)
-  const usedQty = qty;
-  const usageCost = Math.round(usedQty * supply.avgUnitCost);
+  const usageCost = Math.round(usage.quantity * supply.avgUnitCost);
+  const date = typeof usage.date === "string" ? new Date(`${usage.date}T00:00:00+07:00`) : usage.date;
 
-  await tx.supply.update({
-    where: { id: usage.supplyId },
-    data: {
-      stockQty: Number(supply.stockQty) - usedQty,
-    },
+  // Conditional decrement keeps stock non-negative even under concurrent usage.
+  const updated = await tx.supply.updateMany({
+    where: { id: usage.supplyId, stockQty: { gte: usage.quantity } },
+    data: { stockQty: { decrement: usage.quantity } },
   });
+  if (updated.count === 0) {
+    throw new JournalError("JOURNAL_INSUFFICIENT_STOCK", "Not enough stock for this usage");
+  }
 
-  await tx.supplyMovement.create({
+  const movement = await tx.supplyMovement.create({
     data: {
       supplyId: usage.supplyId,
       type: "OUT",
-      quantity: qty,
+      quantity: usage.quantity,
       totalCost: usageCost,
-      date: typeof usage.date === "string" ? new Date(`${usage.date}T00:00:00+07:00`) : usage.date,
+      date,
       createdById,
     },
   });
 
   if (usageCost <= 0) {
-    return { entryId: 0 }; // or handle as appropriate
+    return { entryId: 0, movementId: movement.id, totalCost: 0 };
   }
 
-  return postEntry(tx, {
-    date: usage.date,
-    description: `Supply usage ${usage.id}`,
+  const entry = await postEntry(tx, {
+    date,
+    description: `Supply usage ${movement.id}`,
     refType: "USAGE",
-    refId: usage.id,
+    refId: movement.id,
     lines: [
       { accountCode: "5-100", debit: usageCost },
       { accountCode: "1-300", credit: usageCost },
     ],
     createdById,
   });
+  return { ...entry, movementId: movement.id, totalCost: usageCost };
 }
 
 export async function postOpeningEntry(

@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowLeft, Check, CircleCheck, Package, Truck, WashingMachine, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
 import { Select } from "@/components/ui/field";
 import { ClaimTicket, type PrintSize } from "@/components/orders/claim-ticket";
 import { ReceivePaymentDialog } from "@/components/orders/receive-payment-dialog";
@@ -11,7 +12,7 @@ import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
 import { formatRupiah } from "@/lib/money";
 import { getDictionary } from "@/lib/i18n";
-import { advanceStatusAction, reverseStatusAction } from "@/server/actions/orders";
+import { advanceStatusAction, reverseStatusAction, voidOrderAction } from "@/server/actions/orders";
 import type { OrderDetail } from "@/server/orders/queries";
 import styles from "./order-detail.module.css";
 
@@ -32,6 +33,9 @@ export function OrderDetailView({ order, canReverseStatus, shopName, shopAddress
   const [showOverrideDialog, setShowOverrideDialog] = useState(false);
   const [overrideNote, setOverrideNote] = useState("");
   const [overrideError, setOverrideError] = useState("");
+  const [showVoidDialog, setShowVoidDialog] = useState(false);
+  const [voidReason, setVoidReason] = useState("");
+  const [voidError, setVoidError] = useState("");
 
   const statusSteps = [
     { key: "RECEIVED", label: t.orders.statusReceived, icon: Package },
@@ -115,6 +119,23 @@ export function OrderDetailView({ order, canReverseStatus, shopName, shopAddress
         return;
       }
       show(t.orders.statusReversed);
+      window.location.reload();
+    });
+  }
+
+  function handleVoidConfirm() {
+    if (voidReason.trim().length < 5) {
+      setVoidError(t.orders.voidReasonLabel);
+      return;
+    }
+    startTransition(async () => {
+      const result = await voidOrderAction(order.id, voidReason.trim());
+      if (!result.ok) {
+        if (result.error === "alreadyVoided") setVoidError(t.orders.alreadyVoided);
+        else setVoidError(result.error || t.common.genericError);
+        return;
+      }
+      show(t.orders.voidedSuccess);
       window.location.reload();
     });
   }
@@ -374,6 +395,11 @@ export function OrderDetailView({ order, canReverseStatus, shopName, shopAddress
                 {t.orders.receivePayment}
               </Button>
             )}
+            {isManager && !isVoid && (
+              <Button variant="danger" onClick={() => { setVoidReason(""); setVoidError(""); setShowVoidDialog(true); }}>
+                {t.orders.voidOrder}
+              </Button>
+            )}
           </div>
 
           {/* Void Info */}
@@ -396,6 +422,40 @@ export function OrderDetailView({ order, canReverseStatus, shopName, shopAddress
           onSuccess={(payment) => setAnimatePaid(payment.balance === 0)}
         />
       ) : null}
+      <Dialog
+        open={showVoidDialog}
+        onClose={() => setShowVoidDialog(false)}
+        title={t.orders.voidTitle}
+        closeLabel={t.common.closeDialog}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setShowVoidDialog(false)} disabled={isPending}>
+              {t.common.cancel}
+            </Button>
+            <Button variant="danger" onClick={handleVoidConfirm} loading={isPending}>
+              {t.orders.voidConfirm}
+            </Button>
+          </>
+        }
+      >
+        <p>
+          {t.orders.voidWarning} <strong>{formatRupiah(order.paid)}</strong>
+        </p>
+        <label htmlFor="void-reason" className={styles.overrideLabel}>
+          {t.orders.voidReasonLabel}
+        </label>
+        <textarea
+          id="void-reason"
+          className={styles.overrideTextarea}
+          value={voidReason}
+          onChange={(event) => { setVoidReason(event.target.value); setVoidError(""); }}
+          placeholder={t.orders.voidReasonPlaceholder}
+          rows={3}
+          maxLength={200}
+          disabled={isPending}
+        />
+        {voidError && <p className={styles.overrideError}>{voidError}</p>}
+      </Dialog>
       {showOverrideDialog && (
         <div
           className={styles.overrideDialogOverlay}

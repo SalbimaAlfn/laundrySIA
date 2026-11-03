@@ -54,11 +54,16 @@ export async function trialBalance(asOf?: Date | string): Promise<TrialBalanceRo
   >(
     Prisma.sql`
       SELECT a.code, a.name, a.type,
-             COALESCE(SUM(l.debit), 0) as debit,
-             COALESCE(SUM(l.credit), 0) as credit
+             COALESCE(t.debit, 0) as debit,
+             COALESCE(t.credit, 0) as credit
       FROM accounts a
-      LEFT JOIN journal_lines l ON l.accountId = a.id
-      LEFT JOIN journal_entries e ON e.id = l.entryId AND DATE(e.entryDate) <= ${asOfDateStr}
+      LEFT JOIN (
+        SELECT l.accountId, SUM(l.debit) as debit, SUM(l.credit) as credit
+        FROM journal_lines l
+        JOIN journal_entries e ON e.id = l.entryId
+        WHERE DATE(e.entryDate) <= ${asOfDateStr}
+        GROUP BY l.accountId
+      ) t ON t.accountId = a.id
       GROUP BY a.id, a.code, a.name, a.type
       ORDER BY a.code
     `,

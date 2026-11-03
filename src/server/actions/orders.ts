@@ -4,10 +4,12 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getDictionary, validation } from "@/lib/i18n";
 import { orderSchema } from "@/lib/schemas/order";
+import { voidOrderSchema } from "@/lib/schemas/void";
 import { requireRole, requireUser } from "@/server/auth";
 import { writeAudit } from "@/server/audit";
 import { db } from "@/server/db";
 import { createOrder, OrderCreationError, type CreatedOrder } from "@/server/orders/create-order";
+import { reverseOrderEntries } from "@/server/accounting/posting";
 import type { Prisma } from "@/generated/prisma/client";
 
 const statuses = ["RECEIVED", "WASHING", "DRYING_IRONING", "READY", "COMPLETED"] as const;
@@ -92,6 +94,66 @@ export async function advanceStatusAction(id: number, overrideNote?: string): Pr
 
 export async function reverseStatusAction(id: number): Promise<{ ok: boolean; error?: string }> {
   return changeOrderStatus(id, -1);
+}
+
+export async function voidOrderAction(
+  orderId: number,
+  reason: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const session = await requireRole("MANAGER");
+  const parsed = voidOrderSchema.safeParse({ orderId, reason });
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid void request" };
+  }
+
+  const result = await db.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({
+      where: { id: parsed.data.orderId },
+      select: {
+        id: true,
+        total: true,
+        voidedAt: true,
+        payments: { select: { amount: true } },
+      },
+    });
+    if (!order) return { ok: false, error: "Order not found" };
+    if (order.voidedAt) return { ok: false, error: "alreadyVoided" };
+
+    const refund = order.payments.reduce((total, payment) => total + payment.amount, 0);
+    const updated = await tx.order.updateMany({
+      where: { id: order.id, voidedAt: null },
+      data: {
+        voidedAt: new Date(),
+        voidReason: parsed.data.reason,
+        voidedById: session.id,
+      },
+    });
+    if (updated.count === 0) return { ok: false, error: "alreadyVoided" };
+
+    await reverseOrderEntries(tx, order.id, session.id);
+    await writeAudit(tx, {
+      userId: session.id,
+      action: "ORDER_VOID",
+      entityType: "Order",
+      entityId: order.id,
+      detail: {
+        reason: parsed.data.reason,
+        refund,
+        total: order.total,
+      },
+    });
+    return { ok: true };
+  });
+
+  if (result.ok) {
+    revalidatePath(`/orders/${parsed.data.orderId}`);
+    revalidatePath("/orders");
+    revalidatePath("/counter");
+    revalidatePath("/dashboard");
+    revalidatePath("/receivables");
+    revalidatePath("/reports");
+  }
+  return result;
 }
 
 export type CreateOrderState = {

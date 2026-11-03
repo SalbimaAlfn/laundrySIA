@@ -238,6 +238,14 @@ export type OrderMessages = {
   overrideNotePlaceholder: string;
   overrideNoteRequired: string;
   overrideConfirm: string;
+  voidOrder: string;
+  voidTitle: string;
+  voidWarning: string;
+  voidReasonLabel: string;
+  voidReasonPlaceholder: string;
+  voidConfirm: string;
+  voidedSuccess: string;
+  alreadyVoided: string;
 };
 
 export type CounterBoardMessages = {
@@ -266,17 +274,14 @@ export type ExpenseMessages = {
   notePlaceholder: string;
   savedCreate: string;
   empty: string;
-  savedUpdate: string;
+  saved: string;
   reverse: string;
   reverseReasonRequired: string;
   reverseReasonPlaceholder: string;
   reversed: string;
   reversedTitle: string;
   listTitle: string;
-  createTitle: string;
   createdBy: string;
-  paidFromOptions: { cash: string; bank: string };
-  categoryOptions: { electricityWater: string; wages: string; rent: string; other: string };
 };
 
 export type StockMessages = {
@@ -284,8 +289,11 @@ export type StockMessages = {
   lead: string;
   addSupply: string;
   addPurchase: string;
+  addUsage: string;
   newSupply: string;
   newPurchase: string;
+  newUsage: string;
+  usageSaved: string;
   supply: string;
   name: string;
   unit: string;
@@ -312,6 +320,92 @@ export type StockMessages = {
   type: string;
 };
 
+export type ReportMessages = {
+  title: string;
+  lead: string;
+  incomeStatement: string;
+  cashFlow: string;
+  balanceSheet: string;
+  sales: string;
+  ledger: string;
+  trialBalance: string;
+  from: string;
+  to: string;
+  asOf: string;
+  account: string;
+  apply: string;
+  print: string;
+  export: string;
+  period: string;
+  today: string;
+  thisWeek: string;
+  thisMonth: string;
+  custom: string;
+  revenue: string;
+  expenses: string;
+  profit: string;
+  cashIn: string;
+  cashOut: string;
+  netCash: string;
+  openingCash: string;
+  closingCash: string;
+  assets: string;
+  equity: string;
+  balanced: string;
+  notBalanced: string;
+  code: string;
+  accountName: string;
+  debit: string;
+  credit: string;
+  balance: string;
+  total: string;
+  service: string;
+  quantity: string;
+  day: string;
+  date: string;
+  orders: string;
+  noData: string;
+  summaryIncome: string;
+  summaryCash: string;
+  summaryBalance: string;
+  summarySales: string;
+  summaryLedger: string;
+  summaryTrial: string;
+  orderPayments: string;
+  other: string;
+};
+
+export type DashboardMessages = {
+  title: string;
+  earnedToday: string;
+  receivedToday: string;
+  toCollect: string;
+  lowStock: string;
+  readyOrders: string;
+  last7Days: string;
+  noLowStock: string;
+  noReady: string;
+  noCollect: string;
+  viewAll: string;
+  chartLabel: string;
+};
+
+export type AuditMessages = {
+  title: string;
+  lead: string;
+  user: string;
+  action: string;
+  entity: string;
+  date: string;
+  from: string;
+  to: string;
+  filter: string;
+  clear: string;
+  empty: string;
+  allUsers: string;
+  allActions: string;
+};
+
 export type Dictionary = {
   validation: ValidationMessages;
   auth: AuthMessages;
@@ -326,6 +420,9 @@ export type Dictionary = {
   receivables: ReceivablesMessages;
   expenses: ExpenseMessages;
   stock: StockMessages;
+  reports: ReportMessages;
+  dashboard: DashboardMessages;
+  audit: AuditMessages;
 };
 
 const id: Dictionary = {
@@ -559,6 +656,14 @@ const id: Dictionary = {
     overrideNotePlaceholder: "Masukkan alasan memaksa selesai...",
     overrideNoteRequired: "Catatan override wajib diisi.",
     overrideConfirm: "Konfirmasi override",
+    voidOrder: "Batalkan pesanan",
+    voidTitle: "Batalkan pesanan",
+    voidWarning: "Pesanan akan dibatalkan dan semua jurnalnya dibalik. Uang yang harus dikembalikan:",
+    voidReasonLabel: "Alasan pembatalan (wajib)",
+    voidReasonPlaceholder: "Masukkan alasan pembatalan...",
+    voidConfirm: "Konfirmasi pembatalan",
+    voidedSuccess: "Pesanan dibatalkan dan jurnal dibalik.",
+    alreadyVoided: "Pesanan ini sudah dibatalkan.",
   },
   counterBoard: {
     activeOrders: "Pesanan berjalan",
@@ -592,6 +697,124 @@ const id: Dictionary = {
     reverseReasonPlaceholder: "Alasan pembatalan...",
     reverseReasonRequired: "Alasan pembatalan wajib diisi (5-200 karakter).",
     saved: "Pengeluaran disimpan.",
+  },
+  stock: {
+    title: "Stok supplies",
+    lead: "Kelola supplies, pembelian, dan pemakaian.",
+    addSupply: "Tambah supply",
+    addPurchase: "Catat pembelian",
+    addUsage: "Catat pemakaian",
+    newSupply: "Supply baru",
+    newPurchase: "Pembelian supplies",
+    newUsage: "Pemakaian supplies",
+    usageSaved: "Pemakaian supplies disimpan.",
+    supply: "Supply",
+    name: "Nama",
+    unit: "Satuan",
+    quantity: "Jumlah",
+    totalCost: "Total biaya",
+    minQty: "Batas minimum",
+    minStock: "Min",
+    stock: "Stok",
+    avgCost: "Harga rata-rata",
+    date: "Tanggal",
+    note: "Catatan",
+    paidFrom: "Dibayar dari",
+    lowStock: "Stok rendah:",
+    selectSupply: "Pilih supply",
+    noSupplies: "Belum ada supply.",
+    noMovements: "Belum ada riwayat.",
+    movements: "Riwayat movements",
+    suppliesList: "Daftar supplies",
+    in: "Masuk",
+    out: "Keluar",
+    purchaseSaved: "Pembelian supplies disimpan.",
+    supplySaved: "Supply ditambahkan.",
+    createdBy: "Dibuat oleh",
+    type: "Jenis",
+  },
+  reports: {
+    title: "Laporan",
+    lead: "Pilih laporan untuk melihat angka dan ringkasannya.",
+    incomeStatement: "Laba rugi",
+    cashFlow: "Arus kas",
+    balanceSheet: "Neraca",
+    sales: "Penjualan",
+    ledger: "Buku besar",
+    trialBalance: "Neraca saldo",
+    from: "Dari",
+    to: "Sampai",
+    asOf: "Per tanggal",
+    account: "Akun",
+    apply: "Terapkan",
+    print: "Cetak",
+    export: "Ekspor CSV",
+    period: "Periode",
+    today: "Hari ini",
+    thisWeek: "Minggu ini",
+    thisMonth: "Bulan ini",
+    custom: "Kustom",
+    revenue: "Pendapatan",
+    expenses: "Beban",
+    profit: "Laba",
+    cashIn: "Kas masuk",
+    cashOut: "Kas keluar",
+    netCash: "Arus kas bersih",
+    openingCash: "Kas awal",
+    closingCash: "Kas akhir",
+    assets: "Aset",
+    equity: "Ekuitas",
+    balanced: "Aset sama dengan ekuitas.",
+    notBalanced: "Aset tidak sama dengan ekuitas. Periksa jurnal.",
+    code: "Kode",
+    accountName: "Nama akun",
+    debit: "Debit",
+    credit: "Kredit",
+    balance: "Saldo",
+    total: "Total",
+    service: "Layanan",
+    quantity: "Jumlah",
+    day: "Hari",
+    date: "Tanggal",
+    orders: "Pesanan",
+    noData: "Belum ada data pada periode ini.",
+    summaryIncome: "Pendapatan dikurangi beban menghasilkan laba",
+    summaryCash: "Kas awal ditambah arus kas bersih menjadi kas akhir",
+    summaryBalance: "Total aset dan ekuitas pada tanggal ini",
+    summarySales: "Total penjualan pada periode ini",
+    summaryLedger: "Mutasi akun pada periode ini",
+    summaryTrial: "Total debit dan kredit harus sama.",
+    orderPayments: "Pembayaran pesanan",
+    other: "Lainnya",
+  },
+  dashboard: {
+    title: "Dasbor",
+    earnedToday: "Pendapatan hari ini",
+    receivedToday: "Kas diterima hari ini",
+    toCollect: "Masih harus ditagih",
+    lowStock: "Stok rendah",
+    readyOrders: "Siap diambil",
+    last7Days: "Pendapatan 7 hari terakhir",
+    noLowStock: "Semua stok aman.",
+    noReady: "Belum ada pesanan siap diambil.",
+    noCollect: "Tidak ada tagihan terbuka.",
+    viewAll: "Lihat semua",
+    chartLabel: "Grafik pendapatan tujuh hari terakhir",
+  },
+  audit: {
+    title: "Log audit",
+    lead: "Riwayat tindakan pengguna di aplikasi.",
+    user: "Pengguna",
+    action: "Tindakan",
+    entity: "Entitas",
+    date: "Tanggal",
+    from: "Dari",
+    to: "Sampai",
+    filter: "Terapkan",
+    clear: "Hapus filter",
+    empty: "Belum ada catatan audit.",
+    allUsers: "Semua pengguna",
+    allActions: "Semua tindakan",
   },
 };
 
@@ -824,6 +1047,14 @@ const en: Dictionary = {
     overrideNotePlaceholder: "Enter reason for forcing completion...",
     overrideNoteRequired: "Override note is required.",
     overrideConfirm: "Confirm override",
+    voidOrder: "Void order",
+    voidTitle: "Void order",
+    voidWarning: "The order will be voided and its journal entries reversed. Cash to return to the customer:",
+    voidReasonLabel: "Void reason (required)",
+    voidReasonPlaceholder: "Enter the void reason...",
+    voidConfirm: "Confirm void",
+    voidedSuccess: "Order voided and journal entries reversed.",
+    alreadyVoided: "This order is already voided.",
   },
   counterBoard: {
     activeOrders: "Active orders",
@@ -857,6 +1088,124 @@ const en: Dictionary = {
     reverseReasonPlaceholder: "Reverse reason...",
     reverseReasonRequired: "Reverse reason is required (5-200 characters).",
     saved: "Expense saved.",
+  },
+  stock: {
+    title: "Supplies stock",
+    lead: "Manage supplies, purchases, and usage.",
+    addSupply: "Add supply",
+    addPurchase: "Record purchase",
+    addUsage: "Record usage",
+    newSupply: "New supply",
+    newPurchase: "Supply purchase",
+    newUsage: "Supply usage",
+    usageSaved: "Supply usage saved.",
+    supply: "Supply",
+    name: "Name",
+    unit: "Unit",
+    quantity: "Quantity",
+    totalCost: "Total cost",
+    minQty: "Minimum level",
+    minStock: "Min",
+    stock: "Stock",
+    avgCost: "Average cost",
+    date: "Date",
+    note: "Note",
+    paidFrom: "Paid from",
+    lowStock: "Low stock:",
+    selectSupply: "Select supply",
+    noSupplies: "No supplies yet.",
+    noMovements: "No movements yet.",
+    movements: "Movement history",
+    suppliesList: "Supply list",
+    in: "In",
+    out: "Out",
+    purchaseSaved: "Supply purchase saved.",
+    supplySaved: "Supply added.",
+    createdBy: "Created by",
+    type: "Type",
+  },
+  reports: {
+    title: "Reports",
+    lead: "Choose a report to see the numbers and a plain-language summary.",
+    incomeStatement: "Income statement",
+    cashFlow: "Cash flow",
+    balanceSheet: "Balance sheet",
+    sales: "Sales",
+    ledger: "Ledger",
+    trialBalance: "Trial balance",
+    from: "From",
+    to: "To",
+    asOf: "As of",
+    account: "Account",
+    apply: "Apply",
+    print: "Print",
+    export: "Export CSV",
+    period: "Period",
+    today: "Today",
+    thisWeek: "This week",
+    thisMonth: "This month",
+    custom: "Custom",
+    revenue: "Revenue",
+    expenses: "Expenses",
+    profit: "Profit",
+    cashIn: "Cash in",
+    cashOut: "Cash out",
+    netCash: "Net cash movement",
+    openingCash: "Opening cash",
+    closingCash: "Closing cash",
+    assets: "Assets",
+    equity: "Equity",
+    balanced: "Assets equal equity.",
+    notBalanced: "Assets do not equal equity. Check the journal.",
+    code: "Code",
+    accountName: "Account name",
+    debit: "Debit",
+    credit: "Credit",
+    balance: "Balance",
+    total: "Total",
+    service: "Service",
+    quantity: "Quantity",
+    day: "Day",
+    date: "Date",
+    orders: "Orders",
+    noData: "No data in this period.",
+    summaryIncome: "Revenue minus expenses gives profit of",
+    summaryCash: "Opening cash plus net movement gives closing cash of",
+    summaryBalance: "Total assets and equity on this date are",
+    summarySales: "Total sales in this period are",
+    summaryLedger: "Account movement in this period",
+    summaryTrial: "Total debits and credits must be equal.",
+    orderPayments: "Order payments",
+    other: "Other",
+  },
+  dashboard: {
+    title: "Dashboard",
+    earnedToday: "Earned today",
+    receivedToday: "Received today",
+    toCollect: "Still to collect",
+    lowStock: "Low stock",
+    readyOrders: "Ready for pickup",
+    last7Days: "Revenue for the last 7 days",
+    noLowStock: "All stock levels are safe.",
+    noReady: "No orders ready for pickup.",
+    noCollect: "No open balances.",
+    viewAll: "View all",
+    chartLabel: "Revenue chart for the last seven days",
+  },
+  audit: {
+    title: "Audit log",
+    lead: "History of user actions in the app.",
+    user: "User",
+    action: "Action",
+    entity: "Entity",
+    date: "Date",
+    from: "From",
+    to: "To",
+    filter: "Apply",
+    clear: "Clear filters",
+    empty: "No audit records yet.",
+    allUsers: "All users",
+    allActions: "All actions",
   },
 };
 
