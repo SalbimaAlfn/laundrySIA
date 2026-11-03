@@ -185,7 +185,23 @@ Open http://localhost:3000.
 npm run db:demo
 ```
 
-This loads the worked example from `PRD.md` plus about 30 more orders, so the reports have something to show.
+This loads the worked example from `PRD.md` plus about 30 more orders spread across the last month, so the reports have something to show. The script is safe to run again; it skips work that already exists.
+
+### Demo walkthrough (PRD section 13)
+
+After `db:seed` and `db:demo`, sign in as the manager and open the reports:
+
+1. Opening capital is Rp 1.000.000.
+2. Order 1: 5 kg at Rp 8.000 = Rp 40.000, with a Rp 15.000 cash deposit.
+3. Order 2: 3 kg express at Rp 12.000 = Rp 36.000, paid in full in cash.
+4. Order 3: 10 kg at Rp 7.000 = Rp 70.000, pay later.
+5. Buy detergent for Rp 120.000 cash.
+6. Order 1 pays the remaining Rp 25.000 cash.
+7. Electricity bill Rp 300.000 cash.
+
+Expected after step 7: cash Rp 656.000, receivables Rp 70.000, inventory Rp 120.000, assets Rp 846.000, revenue Rp 146.000, expenses Rp 300.000, profit minus Rp 154.000, equity Rp 846.000, cash in Rp 76.000, cash out Rp 420.000, net cash movement minus Rp 344.000. The trial balance is equal.
+
+To try the void flow, open Order 2, choose **Void order**, and confirm. The dialog shows Rp 36.000 to return; after confirming, cash is Rp 620.000 and revenue is Rp 110.000.
 
 ---
 
@@ -344,6 +360,10 @@ mysql -u root -p laundrysia < backup.sql          # restore
 - No payroll, tax, or online payments
 - No customer portal or WhatsApp messages
 - Receipts print through the browser print dialog
+- The interface is Indonesian in this version. The English dictionary exists, but the language switcher is not wired yet
+- Reports export as CSV (opens in Excel) and the dashboard chart is CSS, so the optional `exceljs` and Recharts packages are not installed
+- Screenshots are not stored in the repository; use `npm run db:demo` to recreate the data shown in the walkthrough
+- The accessibility and responsive pass is manual and still needs a browser/device review
 
 ## Possible next steps
 
