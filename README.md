@@ -172,15 +172,6 @@ npm run dev
 
 Open http://localhost:3000.
 
-### Demo logins (change these before real use)
-
-| Role | Username | Password |
-|---|---|---|
-| Manager | `manager` | `ChangeMe-Manager1` |
-| Cashier | `cashier` | `ChangeMe-Cashier1` |
-
-### Optional: load a month of demo data
-
 ```bash
 npm run db:demo
 ```
