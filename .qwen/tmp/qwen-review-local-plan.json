@@ -1,0 +1,84 @@
+{
+  "target": "local",
+  "diffPath": ".qwen\\tmp\\qwen-review-local-diff.txt",
+  "diffPathAbsolute": "D:\\LaundrySIA\\.qwen\\tmp\\qwen-review-local-diff.txt",
+  "diffLines": 45,
+  "diffChars": 1531,
+  "srcDiffLines": 45,
+  "testDiffLines": 0,
+  "docsDiffLines": 0,
+  "generatedDiffLines": 0,
+  "wrapperSignal": false,
+  "chunks": [
+    {
+      "id": 1,
+      "startLine": 1,
+      "endLine": 45,
+      "lines": 45,
+      "chars": 1531,
+      "maxLineChars": 165,
+      "oversized": false,
+      "files": [
+        { "path": "check-db-info.ts", "newStart": 1, "newEnd": 13 },
+        { "path": "test-connection-quick.ts", "newStart": 1, "newEnd": 20 }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "check-db-info.ts",
+      "kind": "source",
+      "hunks": [
+        { "newStart": 1, "newEnd": 13 }
+      ],
+      "addedLines": 13,
+      "removedLines": 0,
+      "changedLines": 13,
+      "preLines": 0,
+      "fileLines": 0,
+      "rewriteRatio": 0,
+      "heavy": false,
+      "binary": false
+    },
+    {
+      "path": "test-connection-quick.ts",
+      "kind": "source",
+      "hunks": [
+        { "newStart": 1, "newEnd": 20 }
+      ],
+      "addedLines": 20,
+      "removedLines": 0,
+      "changedLines": 20,
+      "preLines": 0,
+      "fileLines": 0,
+      "rewriteRatio": 0,
+      "heavy": false,
+      "binary": false
+    }
+  ],
+  "selection": {
+    "schemaVersion": "qwen.review-selection/v1",
+    "sourceArtifactSha256": "d224690440a5c1cedadda07b6aad488e07e64fb01e14e102c9d187d34eaafbea",
+    "selectionSha256": "bdc1bc4dd1311327f8d0a22245797d2999601c5a7c55ad056dd57d0ef8252aa2"
+  },
+  "budget": {
+    "inlineAngles": 3,
+    "candidateFloor": 2,
+    "sweep": true,
+    "specialistCap": 0,
+    "verifyShard": 8,
+    "agentToolBudget": 32,
+    "reverseAuditRounds": 10
+  },
+  "deadlineSeconds": 28800,
+  "deadlineSource": "default",
+  "untrackedFiles": [
+    "check-db-info.ts",
+    "test-connection-quick.ts"
+  ],
+  "skippedFiles": [],
+  "cachePath": ".qwen\\review-cache\\local.json",
+  "cacheCandidatePath": ".qwen\\tmp\\qwen-review-local-cache-candidate.json",
+  "cacheCandidateStateId": "c694a10988bae9e53efaf98eb7641d395d7bf3090b625cb012c54daa6ad32b8e",
+  "effort": "medium"
+}

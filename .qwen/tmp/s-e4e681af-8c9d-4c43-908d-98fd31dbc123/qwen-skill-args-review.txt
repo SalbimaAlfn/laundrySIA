@@ -1,0 +1,1 @@
+--medium analyze those files inside this folder, then review about the apps gaps or bug inside of it. try those features one by one search for it mistakes, all of it without missing any bugs. then tell me in report markdown files

@@ -1,0 +1,12 @@
+{
+  "v": 1,
+  "target": "local",
+  "headSha": "96b093b6b5dbeab71b35c268b42e9a48d0038b6b",
+  "files": {
+    "check-db-info.ts": "100644:070f19772b2f61a9e6e14e63989604f4ae010f09:diff=unspecified,binary=unspecified,text=unspecified",
+    "test-connection-quick.ts": "100644:acb82c70301184c0da0b298fe6105fdf4a1131e1:diff=unspecified,binary=unspecified,text=unspecified"
+  },
+  "stateId": "c694a10988bae9e53efaf98eb7641d395d7bf3090b625cb012c54daa6ad32b8e",
+  "lastModelId": "auto/best-coding@951428bb",
+  "untracked": true
+}

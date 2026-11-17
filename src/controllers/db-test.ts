@@ -12,7 +12,7 @@ async function testPassword(password: string) {
     console.log('✓ Connection successful with password:', password);
     await connection.end();
     return true;
-  } catch (error) {
+  } catch {
     console.error('✗ Failed with password:', password);
     return false;
   }
@@ -39,14 +39,14 @@ async function main() {
 
   console.log('\n=== Testing different authentication methods ===');
   try {
-    const conn = await mysql.createConnection({
+    await mysql.createConnection({
       host: '127.0.0.1',
       user: 'root',
       password: '',
       database: 'laundrysia'
     });
     console.log('✓ Connected with root @ 127.0.0.1 with empty password');
-  } catch (e) {
+  } catch {
     console.log('✗ 127.0.0.1 empty password failed');
   }
 }

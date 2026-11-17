@@ -1,0 +1,45 @@
+diff --git a/check-db-info.ts b/check-db-info.ts
+new file mode 100644
+index 0000000..070f197
+--- /dev/null
++++ b/check-db-info.ts
+@@ -0,0 +1,13 @@
++import mysql from 'mysql2/promise';
++import { config } from 'dotenv';
++config({ path: '.env' });
++
++async function main(){
++  const url = new URL(process.env.DATABASE_URL!);
++  const conn = await mysql.createConnection({host:url.hostname,port:Number(url.port||3306),user:url.username,password:url.password,database:url.pathname.slice(1)});
++  const [rows] = await conn.execute('SHOW TABLES');
++  console.log('tables count', rows.length);
++  console.log(rows);
++  await conn.end();
++}
++main().catch(e=>{console.error('Failed',e);process.exit(1);});
+diff --git a/test-connection-quick.ts b/test-connection-quick.ts
+new file mode 100644
+index 0000000..acb82c7
+--- /dev/null
++++ b/test-connection-quick.ts
+@@ -0,0 +1,20 @@
++import mysql from 'mysql2/promise';
++import { config } from 'dotenv';
++config({ path: '.env' });
++
++async function main(){
++  const url = new URL(process.env.DATABASE_URL!);
++  const connection = await mysql.createConnection({
++    host: url.hostname,
++    port: Number(url.port || 3306),
++    user: url.username,
++    password: url.password,
++    database: url.pathname.slice(1)
++  });
++  console.log('Connected to MySQL server version', connection.serverVersion);
++  await connection.ping();
++  console.log('Ping OK');
++  await connection.end();
++  console.log('Connection closed');
++}
++main().catch(e=>{console.error('Connection failed',e);process.exit(1);});
