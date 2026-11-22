@@ -151,6 +151,11 @@ describe("T-032 posting rules", () => {
     });
     const result = await db.$transaction((tx) => postUsageEntry(tx, { id: usage.id, supplyId: supply.id, quantity: 2, date: "2026-10-07" }, userId));
     expect(result.entryId).toBeGreaterThan(0);
+    const movement = await db.supplyMovement.findUniqueOrThrow({
+      where: { id: result.movementId },
+      select: { date: true },
+    });
+    expect(movement.date.toISOString().slice(0, 10)).toBe("2026-10-07");
     const entry = await db.journalEntry.findUniqueOrThrow({
       where: { id: result.entryId },
       include: { lines: { include: { account: true } } },

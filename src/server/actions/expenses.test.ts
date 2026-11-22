@@ -34,8 +34,11 @@ vi.mock("@/server/accounting/posting", () => ({
 vi.mock("@/server/db", () => ({
   db: { $transaction: (callback: (tx: typeof mocks.tx) => Promise<unknown>) => callback(mocks.tx) },
 }));
+vi.mock("@/server/accounting/queries", () => ({
+  accountBalance: vi.fn(async (code: string) => (code === "1-100" ? 800_000 : 1_700_000)),
+}));
 
-import { createExpenseAction, reverseExpenseAction } from "./expenses";
+import { createExpenseAction, getExpenseBalance, reverseExpenseAction } from "./expenses";
 
 describe("expense actions", () => {
   beforeEach(() => {
@@ -97,6 +100,13 @@ describe("expense actions", () => {
 
     expect(result.ok).toBe(true);
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/expenses");
+  });
+
+  it("reads cash and bank from the ledger accounts", async () => {
+    await expect(getExpenseBalance()).resolves.toEqual({
+      cashBalance: 800_000,
+      bankBalance: 1_700_000,
+    });
   });
 
   it("fails to reverse if reason is too short", async () => {

@@ -1,4 +1,5 @@
-import type { Prisma, JournalRefType } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
+import type { JournalRefType } from "@/generated/prisma/client";
 import { businessDate, parseBusinessDate } from "@/lib/dates";
 import { JournalError, postEntry } from "./journal";
 
@@ -191,29 +192,26 @@ export async function postPurchaseEntry(
     throw new JournalError("JOURNAL_NOT_INTEGER", "Journal amounts must be integer rupiah");
   }
 
-  const paidFrom = purchase.paidFrom ?? "CASH";
-
-  // Update supply weighted average cost
-  const supply = await tx.supply.findUnique({
-    where: { id: purchase.supplyId },
-  });
-  if (!supply) {
-    throw new JournalError("JOURNAL_ACCOUNT_NOT_FOUND", "Supply not found");
+  if (!Number.isFinite(purchase.quantity) || purchase.quantity <= 0) {
+    throw new JournalError("JOURNAL_INVALID_QUANTITY", "Purchase quantity must be greater than zero");
   }
 
-  const stockQty = Number(supply.stockQty);
-  const avgUnitCost = supply.avgUnitCost;
-  const purchaseQty = purchase.quantity;
-  const purchaseCost = purchase.totalCost;
-  // avgUnitCost updated as round((stockQty x avgUnitCost + purchaseCost) / (stockQty + purchaseQty))
-  const newAvg = Math.round((stockQty * avgUnitCost + purchaseCost) / (stockQty + purchaseQty));
-  await tx.supply.update({
-    where: { id: purchase.supplyId },
-    data: {
-      stockQty: stockQty + purchaseQty,
-      avgUnitCost: newAvg,
-    },
-  });
+  const paidFrom = purchase.paidFrom ?? "CASH";
+
+  // One UPDATE keeps the stock and weighted-average move atomic, so concurrent
+  // purchases cannot overwrite each other's read-modify-write. MySQL evaluates
+  // SET left to right, so the average uses the old stockQty before the row is
+  // incremented below.
+  const updated = await tx.$executeRaw(Prisma.sql`
+    UPDATE supplies
+    SET avgUnitCost = ROUND((stockQty * avgUnitCost + ${purchase.totalCost}) / (stockQty + ${purchase.quantity})),
+        stockQty = stockQty + ${purchase.quantity},
+        updatedAt = CURRENT_TIMESTAMP(3)
+    WHERE id = ${purchase.supplyId}
+  `);
+  if (updated === 0) {
+    throw new JournalError("JOURNAL_ACCOUNT_NOT_FOUND", "Supply not found");
+  }
 
   return postEntry(tx, {
     date: purchase.date,
@@ -250,7 +248,10 @@ export async function postUsageEntry(
   }
 
   const usageCost = Math.round(usage.quantity * supply.avgUnitCost);
-  const date = typeof usage.date === "string" ? new Date(`${usage.date}T00:00:00+07:00`) : usage.date;
+  // `@db.Date` columns hold the business calendar date, so a `YYYY-MM-DD`
+  // string must become UTC midnight. Using +07:00 midnight shifted the stored
+  // date one day back on any server not running in WIB.
+  const date = typeof usage.date === "string" ? new Date(usage.date) : usage.date;
 
   // Conditional decrement keeps stock non-negative even under concurrent usage.
   const updated = await tx.supply.updateMany({

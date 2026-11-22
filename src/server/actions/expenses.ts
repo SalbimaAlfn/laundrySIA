@@ -6,6 +6,7 @@ import { expenseSchema } from "@/lib/schemas";
 import { writeAudit } from "@/server/audit";
 import { requireRole } from "@/server/auth";
 import { db } from "@/server/db";
+import { accountBalance } from "@/server/accounting/queries";
 import { postExpenseEntry, reverseEntriesByRef } from "@/server/accounting/posting";
 
 export type ExpenseRecord = {
@@ -198,54 +199,15 @@ export async function getExpenses(): Promise<ExpenseRecord[]> {
   }));
 }
 
+/**
+ * Cash and bank come straight from the ledger instead of re-summing source
+ * rows. Re-summing missed voided orders, charged every supply purchase to cash
+ * even when it was paid from the bank, and could drift from the trial balance.
+ */
 export async function getExpenseBalance(): Promise<{ cashBalance: number; bankBalance: number }> {
-  // Get opening balances
-  const settings = await db.setting.findMany({
-    where: { key: { in: ["opening.cash", "opening.bank"] } },
-    select: { key: true, value: true },
-  });
-  const opening = { cash: 0, bank: 0 };
-  for (const s of settings) {
-    if (s.key === "opening.cash") opening.cash = Number(s.value);
-    if (s.key === "opening.bank") opening.bank = Number(s.value);
-  }
-
-  // Sum all expenses and reversals
-  const expenses = await db.expense.findMany({
-    select: { amount: true, paidFrom: true, reversedAt: true },
-  });
-
-  let cashSpent = 0;
-  let bankSpent = 0;
-  for (const exp of expenses) {
-    if (exp.reversedAt) continue;
-    if (exp.paidFrom === "CASH") cashSpent += exp.amount;
-    else bankSpent += exp.amount;
-  }
-
-  // Also include payments received (income)
-  const payments = await db.payment.findMany({
-    select: { amount: true, method: true },
-  });
-  let cashReceived = 0;
-  let bankReceived = 0;
-  for (const p of payments) {
-    if (p.method === "CASH") cashReceived += p.amount;
-    else bankReceived += p.amount;
-  }
-
-  // Include supply purchases
-  const purchases = await db.supplyMovement.findMany({
-    where: { type: "IN" },
-    select: { totalCost: true },
-  });
-  let purchaseCash = 0;
-  for (const pur of purchases) {
-    purchaseCash += pur.totalCost;
-  }
-
-  return {
-    cashBalance: opening.cash + cashReceived - cashSpent - purchaseCash,
-    bankBalance: opening.bank + bankReceived - bankSpent,
-  };
+  const [cashBalance, bankBalance] = await Promise.all([
+    accountBalance("1-100"),
+    accountBalance("1-110"),
+  ]);
+  return { cashBalance, bankBalance };
 }

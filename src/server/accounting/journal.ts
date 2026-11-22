@@ -14,7 +14,8 @@ export type JournalErrorCode =
   | "JOURNAL_ACCOUNT_NOT_FOUND"
   | "JOURNAL_ENTRY_NOT_FOUND"
   | "JOURNAL_ALREADY_REVERSED"
-  | "JOURNAL_INSUFFICIENT_STOCK";
+  | "JOURNAL_INSUFFICIENT_STOCK"
+  | "JOURNAL_INVALID_QUANTITY";
 
 export class JournalError extends Error {
   readonly code: JournalErrorCode;
