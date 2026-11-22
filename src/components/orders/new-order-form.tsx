@@ -195,7 +195,7 @@ export function NewOrderForm({
         const currentValue = toHundredths(item.quantity) ?? 0;
         return {
           ...item,
-          quantity: formatQuantity(Math.max(step, currentValue + step * direction)),
+          quantity: (Math.max(step, currentValue + step * direction) / 100).toFixed(2).replace(/\.?0+$/, ""),
         };
       }),
     );
@@ -211,7 +211,10 @@ export function NewOrderForm({
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    if (!customer || !services.length || items.some((item) => item.serviceId === null)) return;
+    if (!customer || !services.length || items.some((item) => item.serviceId === null)) {
+      event.preventDefault();
+      return;
+    }
     if (localDiscountError || localPaymentError) {
       event.preventDefault();
     }

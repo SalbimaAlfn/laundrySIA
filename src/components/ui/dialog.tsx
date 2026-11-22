@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
 import styles from "./dialog.module.css";
 
@@ -16,6 +16,12 @@ export type DialogProps = {
 export function Dialog({ open, onClose, title, closeLabel, children, footer }: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
+
+  const openRef = useRef(open);
+
+  useLayoutEffect(() => {
+    openRef.current = open;
+  }, [open]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -46,7 +52,7 @@ export function Dialog({ open, onClose, title, closeLabel, children, footer }: D
       onClose={() => {
         // The close event also fires after our own close() call. Only notify
         // the parent when the dialog was still logically open.
-        if (open) onClose();
+        if (openRef.current) onClose();
       }}
     >
       <div className={styles.header}>
