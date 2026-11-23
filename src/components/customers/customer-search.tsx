@@ -46,6 +46,26 @@ function QuickAddCustomerForm({
   const { show } = useToast();
   const [state, formAction, pending] = useActionState(createCustomerAction, emptyState);
   const handled = useRef<number | null>(null);
+  const [nameError, setNameError] = useState<string | undefined>();
+  const [phoneError, setPhoneError] = useState<string | undefined>();
+
+  const handleSubmit = (event: React.FormEvent) => {
+    let valid = true;
+    const target = event.currentTarget as HTMLFormElement;
+    const nameInput = target.elements.namedItem("name") as HTMLInputElement;
+    const phoneInput = target.elements.namedItem("phone") as HTMLInputElement;
+    if (!nameError && (!nameInput || !nameInput.value || nameInput.value.trim() === "")) {
+      setNameError(t.validation.required);
+      valid = false;
+    }
+    if (!phoneError && (!phoneInput || !phoneInput.value || phoneInput.value.trim() === "")) {
+      setPhoneError(t.validation.required);
+      valid = false;
+    }
+    if (!valid) {
+      event.preventDefault();
+    }
+  };
 
   useEffect(() => {
     if (state.status === "success" && state.customer && handled.current !== state.customer.id) {
@@ -56,7 +76,7 @@ function QuickAddCustomerForm({
   }, [state, show, onCreated, t]);
 
   return (
-    <form action={formAction} className={styles.addForm}>
+    <form action={formAction} className={styles.addForm} onSubmit={handleSubmit}>
       {state.status === "duplicate" ? (
         <p className={styles.formError} role="alert">
           <CircleAlert aria-hidden="true" size={16} />
@@ -70,15 +90,17 @@ function QuickAddCustomerForm({
         </p>
       ) : null}
 
-      <Field htmlFor="quick-customer-name" label={t.customers.name} error={state.errors?.name}>
+      <Field htmlFor="quick-customer-name" label={t.customers.name} error={state.errors?.name || nameError}>
         <Input name="name" autoComplete="name" required autoFocus />
       </Field>
+
+      <p className={styles.formError} role="alert" style={{marginTop: 4}}>{nameError}</p>
 
       <Field
         htmlFor="quick-customer-phone"
         label={t.customers.phone}
         hint={t.customers.phoneHint}
-        error={state.errors?.phone}
+        error={state.errors?.phone || phoneError}
       >
         <Input name="phone" type="tel" inputMode="tel" autoComplete="tel" required />
       </Field>

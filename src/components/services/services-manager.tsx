@@ -39,6 +39,7 @@ function ServiceForm({
   const [state, formAction, pending] = useActionState(action, emptyState);
   const [price, setPrice] = useState<number | null>(service?.price ?? null);
   const handled = useRef(false);
+  const [turnaroundError, setTurnaroundError] = useState<string | undefined>();
 
   useEffect(() => {
     if (state.status === "success" && !handled.current) {
@@ -53,6 +54,18 @@ function ServiceForm({
       onDone();
     }
   }, [state, mode, show, onDone, t]);
+
+  // Validate turnaround days on form changes
+  useEffect(() => {
+    const turnaroundInput = document.getElementById(`turnaroundDays-${mode}`) as HTMLInputElement;
+    if (!turnaroundInput) return;
+    const value = parseInt(turnaroundInput.value, 10);
+    if (isNaN(value) || value < 0 || value > 30) {
+      setTurnaroundError(t.services.turnaround);
+    } else {
+      setTurnaroundError(undefined);
+    }
+  }, [mode, t]);
 
   return (
     <form action={formAction} className={styles.form}>
@@ -99,7 +112,7 @@ function ServiceForm({
         htmlFor={`service-turnaround-${mode}`}
         label={`${t.services.turnaround} (${t.services.turnaroundUnit})`}
         hint={t.services.turnaroundHint}
-        error={state.errors?.turnaroundDays}
+        error={state.errors?.turnaroundDays || turnaroundError}
       >
         <Input
           name="turnaroundDays"
@@ -110,7 +123,14 @@ function ServiceForm({
           step={1}
           defaultValue={service?.turnaroundDays ?? 1}
           required
+          aria-invalid={state.errors?.turnaroundDays ? true : turnaroundError ? true : undefined}
+          aria-describedby={turnaroundError ? `turnaround-error-${mode}` : undefined}
         />
+        {turnaroundError && (
+          <p className={styles.formError} role="alert" id={`turnaround-error-${mode}`}>
+            {turnaroundError}
+          </p>
+        )}
       </Field>
 
       <label className={styles.checkbox}>

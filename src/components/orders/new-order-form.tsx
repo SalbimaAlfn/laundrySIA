@@ -211,10 +211,26 @@ export function NewOrderForm({
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    if (!customer || !services.length || items.some((item) => item.serviceId === null)) {
+    // Check for missing customer or services
+    if (!customer || !services.length) {
       event.preventDefault();
       return;
     }
+    // Check if any item has no service selected
+    if (items.some((item) => item.serviceId === null)) {
+      event.preventDefault();
+      return;
+    }
+    // Check for valid quantities on all items
+    const hasInvalidQuantity = items.some((item) => {
+      const quantity = toHundredths(item.quantity);
+      return quantity === null || isNaN(quantity);
+    });
+    if (hasInvalidQuantity) {
+      event.preventDefault();
+      return;
+    }
+    // Check for discount/payment errors
     if (localDiscountError || localPaymentError) {
       event.preventDefault();
     }
