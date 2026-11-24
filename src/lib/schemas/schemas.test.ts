@@ -364,7 +364,7 @@ describe("user schemas", () => {
 describe("settings schemas", () => {
   it("accepts a shop profile and normalizes its phone", () => {
     const result = shopProfileSchema.safeParse({
-      name: "Sari Laundry",
+      name: "Bee Bee Laundry",
       address: "Jl. Mawar 12",
       phone: "+62 812-3456-7890",
       receiptFooter: "Terima kasih.",
@@ -378,7 +378,7 @@ describe("settings schemas", () => {
   it("rejects an invalid shop phone", () => {
     expectFailure(
       shopProfileSchema.safeParse({
-        name: "Sari Laundry",
+        name: "Bee Bee Laundry",
         address: "",
         phone: "123",
         receiptFooter: "",

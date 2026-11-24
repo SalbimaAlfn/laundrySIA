@@ -26,10 +26,10 @@ const services = [
 ] as const;
 
 const settings = [
-  { key: "shop.name", value: "Sari Laundry" },
+  { key: "shop.name", value: "Bee Bee Laundry" },
   { key: "shop.address", value: "Jl. Mawar No. 12, Jakarta" },
   { key: "shop.phone", value: "081234567890" },
-  { key: "shop.receipt_footer", value: "Terima kasih sudah mencuci di Sari Laundry." },
+  { key: "shop.receipt_footer", value: "Terima kasih sudah mencuci di Bee Bee Laundry." },
   { key: "shop.pickup_rules", value: "Pengambilan cucian harus menunjukkan struk ini." },
   { key: "app.locale", value: "id" },
   { key: "opening.status", value: "unset" },
