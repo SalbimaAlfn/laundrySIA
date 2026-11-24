@@ -19,8 +19,10 @@ const accounts = [
 
 const services = [
   { name: "Cuci + setrika", unit: "KG", price: 8000, turnaroundDays: 2 },
-  { name: "Express", unit: "KG", price: 12000, turnaroundDays: 1 },
-  { name: "Kiloan", unit: "KG", price: 7000, turnaroundDays: 3 },
+  { name: "Express", unit: "KG", price: 7000, turnaroundDays: 1 },
+  { name: "Kiloan", unit: "KG", price: 3000, turnaroundDays: 3 },
+  { name: "kilat", unit: "KG", price: 10000, turnaroundDays: 1 },
+  { name: "super kilat", unit: "KG", price: 14000, turnaroundDays: 0 },
 ] as const;
 
 const settings = [

@@ -62,9 +62,13 @@ function QuickAddCustomerForm({
       setPhoneError(t.validation.required);
       valid = false;
     }
+    // Validate and prevent default to let Next.js handle server action
     if (!valid) {
       event.preventDefault();
+      return;
     }
+    // Form is valid, let Next.js handle submission via formAction
+    event.preventDefault();
   };
 
   useEffect(() => {
