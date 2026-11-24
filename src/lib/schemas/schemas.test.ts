@@ -365,7 +365,7 @@ describe("settings schemas", () => {
   it("accepts a shop profile and normalizes its phone", () => {
     const result = shopProfileSchema.safeParse({
       name: "Bee Bee Laundry",
-      address: "Jl. Mawar 12",
+      address: "Jalan Abdul Gani Atas",
       phone: "+62 812-3456-7890",
       receiptFooter: "Terima kasih.",
       pickupRules: "Tunjukkan struk.",

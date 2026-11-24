@@ -27,7 +27,7 @@ const services = [
 
 const settings = [
   { key: "shop.name", value: "Bee Bee Laundry" },
-  { key: "shop.address", value: "Jl. Mawar No. 12, Jakarta" },
+  { key: "shop.address", value: "Jalan Abdul Gani Atas" },
   { key: "shop.phone", value: "081234567890" },
   { key: "shop.receipt_footer", value: "Terima kasih sudah mencuci di Bee Bee Laundry." },
   { key: "shop.pickup_rules", value: "Pengambilan cucian harus menunjukkan struk ini." },

@@ -420,7 +420,7 @@ This is the one place the design is deliberately memorable. A paper claim ticket
 ```
    __________________________
   /  Sari Laundry            \
-  |  Jl. Mawar 12            |
+  |  Jalan Abdul Gani Atas |
   |  INV-20261008-001        |
   |  8 Okt 2026              |
   o - - - - - - - - - - - - -o     perforation, with a notch on each side
