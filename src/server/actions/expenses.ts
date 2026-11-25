@@ -8,6 +8,7 @@ import { requireRole } from "@/server/auth";
 import { db } from "@/server/db";
 import { accountBalance } from "@/server/accounting/queries";
 import { postExpenseEntry, reverseEntriesByRef } from "@/server/accounting/posting";
+import { parseRupiah } from "@/lib/money";
 
 export type ExpenseRecord = {
   id: number;
@@ -44,7 +45,7 @@ function fieldErrorsOf(error: z.ZodError): Record<string, string> {
 function readForm(formData: FormData) {
   return expenseSchema.safeParse({
     category: formData.get("category"),
-    amount: Number(formData.get("amount")),
+    amount: parseRupiah(String(formData.get("amount") ?? "")),
     paidFrom: formData.get("paidFrom"),
     date: formData.get("date"),
     note: formData.get("note") || undefined,

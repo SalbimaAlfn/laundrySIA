@@ -159,12 +159,12 @@ export function ExpensesManager({ expenses, cashBalance, bankBalance }: Expenses
             <label className={styles.field}>
               <span>{t.expenses?.amount || "Jumlah"} *</span>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
                 name="amount"
                 value={formData.amount}
                 onChange={handleInputChange}
                 placeholder="0"
-                min="1"
                 className={formError.amount ? styles.error : ""}
               />
               {formError.amount && <span className={styles.errorText}>{formError.amount}</span>}
