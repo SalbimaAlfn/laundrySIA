@@ -1,0 +1,14 @@
+npm notice run laundrysia@0.1.0 npx
+npm notice run tsx -e 
+npm notice run import { config } from 'dotenv';
+npm notice run config({ path: '.env', quiet: true });
+npm notice run const { db } = await import('./src/server/db');
+npm notice run const c = await db.customer.count();
+npm notice run const o = await db.order.count();
+npm notice run const s = await db.service.count();
+npm notice run const u = await db.user.count();
+npm notice run const e = await db.expense.count();
+npm notice run const p = await db.payment.count();
+npm notice run const su = await db.supply.count();
+npm notice run console.log(c + ' ' + o + ' ' + s + ' ' + u + ' ' + e + ' ' + p + ' ' + su);
+npm notice run await db.$disconnect();
